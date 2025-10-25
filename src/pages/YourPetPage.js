@@ -69,10 +69,12 @@ export default function YourPetPage({
       if (unlockedAchievements.includes(arrivalCount - 1)) {
         setFireConfettiKey(prev => prev + 1);
         Toast.show({
-          type: 'success',
+          type: 'achievement',
           text1: achievementDefinitions[arrivalCount - 1].title,
           text2: achievementDefinitions[arrivalCount - 1].subtitle,
           position: 'bottom',
+          visibilityTime: 3000,
+          bottomOffset: 40,
         });
       }
     }
@@ -199,7 +201,19 @@ export default function YourPetPage({
         navigateToLearning={navigateToLearning}
       />
 
-      <Toast />
+      <Toast 
+        config={{
+          achievement: ({ text1, text2 }) => (
+            <View style={styles.toastContainer}>
+              <Text style={styles.toastIcon}>🎉</Text>
+              <View style={styles.toastTextContainer}>
+                <Text style={styles.toastTitle}>{text1}</Text>
+                <Text style={styles.toastSubtitle}>{text2}</Text>
+              </View>
+            </View>
+          ),
+        }}
+      />
 
       <StatusBar style="auto" />
       </View>
@@ -367,5 +381,35 @@ const styles = StyleSheet.create({
     color: colors.text,
     fontSize: 14,
     fontWeight: 'bold',
+  },
+  toastContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.primaryLight,
+    paddingVertical: 20,
+    paddingHorizontal: 24,
+    borderRadius: borderRadius.lg,
+    marginHorizontal: 20,
+    width: '90%',
+    borderWidth: 2,
+    borderColor: colors.accent,
+    ...shadows.glow,
+  },
+  toastIcon: {
+    fontSize: 48,
+    marginRight: 16,
+  },
+  toastTextContainer: {
+    flex: 1,
+  },
+  toastTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: colors.text,
+    marginBottom: 4,
+  },
+  toastSubtitle: {
+    fontSize: 16,
+    color: colors.accentLight,
   },
 });
