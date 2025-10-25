@@ -110,6 +110,7 @@ const styles = StyleSheet.create({
   petPageContent: {
     flex: 1,
     marginTop: 60,
+    width: '100%',
   },
   createRouteButton: {
     backgroundColor: '#2196F3',
@@ -131,6 +132,7 @@ const styles = StyleSheet.create({
   },
   routesContainer: {
     padding: 20,
+    width: '100%',
   },
   routesTitle: {
     fontSize: 20,
@@ -146,6 +148,7 @@ const styles = StyleSheet.create({
   },
   routeItemContainer: {
     marginBottom: 15,
+    width: '100%',
   },
   routeItem: {
     flexDirection: 'row',
