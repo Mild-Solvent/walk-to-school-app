@@ -1,15 +1,19 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, View, Text, ActivityIndicator, TouchableOpacity, Image } from 'react-native';
-import { useState, useEffect } from 'react';
+import { StyleSheet, View, Text, ActivityIndicator, TouchableOpacity, Image, Animated, Dimensions } from 'react-native';
+import { useState, useEffect, useRef } from 'react';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
+
+const { width } = Dimensions.get('window');
 
 export default function App() {
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const slideAnim = useRef(new Animated.Value(width)).current;
 
-  useEffect(() => {
+useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
@@ -23,6 +27,18 @@ export default function App() {
       setLoading(false);
     })();
   }, []);
+
+  useEffect(() => {
+    Animated.timing(slideAnim, {
+      toValue: menuOpen ? 0 : width,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+  }, [menuOpen]);
+
+  const toggleMenu = () => {
+    setMenuOpen(!menuOpen);
+  };
 
   if (loading) {
     return (
@@ -41,7 +57,7 @@ export default function App() {
     );
   }
 
-  return (
+return (
     <View style={styles.container}>
       <MapView
         style={styles.map}
@@ -65,6 +81,48 @@ export default function App() {
           />
         )}
       </MapView>
+
+      {/* Header */}
+      <View style={styles.header}>
+        <Text style={styles.appTitle}>Walk to school</Text>
+        <TouchableOpacity onPress={toggleMenu} style={styles.burgerButton}>
+          <View style={styles.burgerLine} />
+          <View style={styles.burgerLine} />
+          <View style={styles.burgerLine} />
+        </TouchableOpacity>
+      </View>
+
+      {/* Side Menu Panel */}
+      <Animated.View
+        style={[
+          styles.sideMenu,
+          {
+            transform: [{ translateX: slideAnim }],
+          },
+        ]}
+      >
+        <View style={styles.menuHeader}>
+          <Text style={styles.menuTitle}>Menu</Text>
+          <TouchableOpacity onPress={toggleMenu}>
+            <Text style={styles.closeButton}>✕</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.menuContent}>
+          <Text style={styles.menuItem}>Settings</Text>
+          <Text style={styles.menuItem}>Profile</Text>
+          <Text style={styles.menuItem}>About</Text>
+        </View>
+      </Animated.View>
+
+      {/* Overlay */}
+      {menuOpen && (
+        <TouchableOpacity
+          style={styles.overlay}
+          activeOpacity={1}
+          onPress={toggleMenu}
+        />
+      )}
+
       <TouchableOpacity style={styles.dragonButton}>
         <Image
           source={require('./assets/dragon.png')}
@@ -117,5 +175,89 @@ const styles = StyleSheet.create({
   dragonImage: {
     width: 40,
     height: 40,
+  },
+  header: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 60,
+    backgroundColor: '#fff',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    zIndex: 10,
+  },
+  appTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  burgerButton: {
+    padding: 5,
+  },
+  burgerLine: {
+    width: 25,
+    height: 3,
+    backgroundColor: '#333',
+    marginVertical: 2,
+    borderRadius: 2,
+  },
+  sideMenu: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    width: width * 0.75,
+    height: '100%',
+    backgroundColor: '#fff',
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: -2, height: 0 },
+    shadowOpacity: 0.25,
+    shadowRadius: 5,
+    zIndex: 20,
+  },
+  menuHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e0e0e0',
+    marginTop: 40,
+  },
+  menuTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  closeButton: {
+    fontSize: 24,
+    color: '#333',
+  },
+  menuContent: {
+    padding: 20,
+  },
+  menuItem: {
+    fontSize: 18,
+    color: '#333',
+    paddingVertical: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
+  },
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    zIndex: 15,
   },
 });
