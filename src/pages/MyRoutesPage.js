@@ -12,6 +12,7 @@ export default function MyRoutesPage({
   navigateToYourPet,
   navigateToMyRoutes,
   navigateToLearning,
+  totalPoints,
   navigateToCreateRoute,
   savedRoutes,
   viewRoute,
@@ -23,11 +24,16 @@ export default function MyRoutesPage({
           <Text style={commonStyles.backButtonText}>← Back</Text>
         </TouchableOpacity>
         <Text style={commonStyles.appTitle}>My Routes</Text>
-        <TouchableOpacity onPress={toggleMenu} style={commonStyles.burgerButton}>
-          <View style={commonStyles.burgerLine} />
-          <View style={commonStyles.burgerLine} />
-          <View style={commonStyles.burgerLine} />
-        </TouchableOpacity>
+        <View style={styles.headerRight}>
+          <TouchableOpacity style={styles.pointsBadge}>
+            <Text style={styles.pointsText}>{totalPoints} pts</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={toggleMenu} style={commonStyles.burgerButton}>
+            <View style={commonStyles.burgerLine} />
+            <View style={commonStyles.burgerLine} />
+            <View style={commonStyles.burgerLine} />
+          </TouchableOpacity>
+        </View>
       </View>
 
       <ScrollView style={styles.petPageContent}>
@@ -140,5 +146,22 @@ const styles = StyleSheet.create({
   waypointCount: {
     fontSize: 14,
     color: '#666',
+  },
+  headerRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  pointsBadge: {
+    backgroundColor: '#4CAF50',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    marginRight: 5,
+  },
+  pointsText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: 'bold',
   },
 });

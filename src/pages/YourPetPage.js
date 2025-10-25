@@ -13,6 +13,8 @@ export default function YourPetPage({
   navigateToYourPet,
   navigateToMyRoutes,
   navigateToLearning,
+  totalPoints,
+  recentRoutes,
   isAnimating,
   handleSimulateArrival,
   videoRef,
@@ -27,11 +29,16 @@ export default function YourPetPage({
           <Text style={commonStyles.backButtonText}>← Back</Text>
         </TouchableOpacity>
         <Text style={commonStyles.appTitle}>Your Pet</Text>
-        <TouchableOpacity onPress={toggleMenu} style={commonStyles.burgerButton}>
-          <View style={commonStyles.burgerLine} />
-          <View style={commonStyles.burgerLine} />
-          <View style={commonStyles.burgerLine} />
-        </TouchableOpacity>
+        <View style={styles.headerRight}>
+          <TouchableOpacity style={styles.pointsBadge}>
+            <Text style={styles.pointsText}>{totalPoints} pts</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={toggleMenu} style={commonStyles.burgerButton}>
+            <View style={commonStyles.burgerLine} />
+            <View style={commonStyles.burgerLine} />
+            <View style={commonStyles.burgerLine} />
+          </TouchableOpacity>
+        </View>
       </View>
 
       <ScrollView style={styles.petPageContent}>
@@ -73,22 +80,16 @@ export default function YourPetPage({
 
         <View style={styles.routesContainer}>
           <Text style={styles.routesTitle}>Recent Routes</Text>
-          <View style={styles.routeItem}>
-            <Text style={styles.routeDate}>Oct 21, 2025</Text>
-            <Text style={styles.routePoints}>+5pts</Text>
-          </View>
-          <View style={styles.routeItem}>
-            <Text style={styles.routeDate}>Oct 20, 2025</Text>
-            <Text style={styles.routePoints}>+5pts</Text>
-          </View>
-          <View style={styles.routeItem}>
-            <Text style={styles.routeDate}>Oct 19, 2025</Text>
-            <Text style={styles.routePoints}>+5pts</Text>
-          </View>
-          <View style={styles.routeItem}>
-            <Text style={styles.routeDate}>Oct 18, 2025</Text>
-            <Text style={styles.routePoints}>+5pts</Text>
-          </View>
+          {recentRoutes.length === 0 ? (
+            <Text style={styles.noRoutesText}>No recent routes yet. Click "Simulate Arrival" to add one!</Text>
+          ) : (
+            recentRoutes.slice(0, 4).map((route, index) => (
+              <View key={index} style={styles.routeItem}>
+                <Text style={styles.routeDate}>{route.date}</Text>
+                <Text style={styles.routePoints}>+{route.points}pts</Text>
+              </View>
+            ))
+          )}
         </View>
       </ScrollView>
 
@@ -226,6 +227,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#4CAF50',
   },
+  noRoutesText: {
+    fontSize: 14,
+    color: '#999',
+    textAlign: 'center',
+    marginTop: 10,
+  },
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -277,5 +284,22 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#333',
     flex: 1,
+  },
+  headerRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  pointsBadge: {
+    backgroundColor: '#4CAF50',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    marginRight: 5,
+  },
+  pointsText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: 'bold',
   },
 });

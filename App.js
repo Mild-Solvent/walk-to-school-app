@@ -22,6 +22,7 @@ export default function App() {
   const [waypoints, setWaypoints] = useState([]);
   const [selectedRouteId, setSelectedRouteId] = useState(null);
   const [totalPoints, setTotalPoints] = useState(0);
+  const [recentRoutes, setRecentRoutes] = useState([]);
   const slideAnim = useRef(new Animated.Value(width)).current;
   const videoRef = useRef(null);
 
@@ -82,11 +83,10 @@ export default function App() {
 
   const addRecentRoute = () => {
     const newRoute = {
-      date: new Date().toLocaleDateString(),
+      date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
       points: 5,
     };
-    // This would be added to a recent routes list
-    return newRoute;
+    setRecentRoutes([newRoute, ...recentRoutes]);
   };
 
   const handleMapLongPress = (e) => {
@@ -161,6 +161,7 @@ export default function App() {
         navigateToYourPet={navigateToYourPet}
         navigateToMyRoutes={navigateToMyRoutes}
         navigateToLearning={navigateToLearning}
+        totalPoints={totalPoints}
         addPoints={addPoints}
       />
     );
@@ -176,6 +177,7 @@ export default function App() {
         navigateToYourPet={navigateToYourPet}
         navigateToMyRoutes={navigateToMyRoutes}
         navigateToLearning={navigateToLearning}
+        totalPoints={totalPoints}
         navigateToCreateRoute={navigateToCreateRoute}
         savedRoutes={savedRoutes}
         viewRoute={viewRoute}
@@ -205,6 +207,8 @@ export default function App() {
         navigateToYourPet={navigateToYourPet}
         navigateToMyRoutes={navigateToMyRoutes}
         navigateToLearning={navigateToLearning}
+        totalPoints={totalPoints}
+        recentRoutes={recentRoutes}
         isAnimating={isAnimating}
         handleSimulateArrival={handleSimulateArrival}
         videoRef={videoRef}

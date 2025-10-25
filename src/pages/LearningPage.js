@@ -59,6 +59,7 @@ export default function LearningPage({
   navigateToYourPet,
   navigateToMyRoutes,
   navigateToLearning,
+  totalPoints,
   addPoints,
 }) {
   const [selectedQuiz, setSelectedQuiz] = useState(null);
@@ -111,11 +112,16 @@ export default function LearningPage({
           <Text style={commonStyles.backButtonText}>← Back</Text>
         </TouchableOpacity>
         <Text style={commonStyles.appTitle}>Learning</Text>
-        <TouchableOpacity onPress={toggleMenu} style={commonStyles.burgerButton}>
-          <View style={commonStyles.burgerLine} />
-          <View style={commonStyles.burgerLine} />
-          <View style={commonStyles.burgerLine} />
-        </TouchableOpacity>
+        <View style={styles.headerRight}>
+          <TouchableOpacity style={styles.pointsBadge}>
+            <Text style={styles.pointsText}>{totalPoints} pts</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={toggleMenu} style={commonStyles.burgerButton}>
+            <View style={commonStyles.burgerLine} />
+            <View style={commonStyles.burgerLine} />
+            <View style={commonStyles.burgerLine} />
+          </TouchableOpacity>
+        </View>
       </View>
 
       <ScrollView style={styles.pageContent}>
@@ -359,6 +365,23 @@ const styles = StyleSheet.create({
   nextButtonText: {
     color: '#fff',
     fontSize: 18,
+    fontWeight: 'bold',
+  },
+  headerRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  pointsBadge: {
+    backgroundColor: '#4CAF50',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    marginRight: 5,
+  },
+  pointsText: {
+    color: '#fff',
+    fontSize: 14,
     fontWeight: 'bold',
   },
 });
