@@ -65,16 +65,21 @@ export default function LearningPage({
   const [selectedQuiz, setSelectedQuiz] = useState(null);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
+  const [showResults, setShowResults] = useState(false);
   const [quizCompleted, setQuizCompleted] = useState({});
 
   const startQuiz = (quiz) => {
     setSelectedQuiz(quiz);
     setCurrentSlide(0);
     setSelectedAnswer(null);
+    setShowResults(false);
   };
 
   const handleAnswerSelect = (index) => {
-    setSelectedAnswer(index);
+    if (!showResults) {
+      setSelectedAnswer(index);
+      setShowResults(true);
+    }
   };
 
   const handleNext = () => {
@@ -86,6 +91,7 @@ export default function LearningPage({
     if (currentSlide < selectedQuiz.slides.length - 1) {
       setCurrentSlide(currentSlide + 1);
       setSelectedAnswer(null);
+      setShowResults(false);
     } else {
       // Quiz completed
       if (!quizCompleted[selectedQuiz.id]) {
@@ -96,6 +102,7 @@ export default function LearningPage({
       setSelectedQuiz(null);
       setCurrentSlide(0);
       setSelectedAnswer(null);
+      setShowResults(false);
     }
   };
 
@@ -103,6 +110,7 @@ export default function LearningPage({
     setSelectedQuiz(null);
     setCurrentSlide(0);
     setSelectedAnswer(null);
+    setShowResults(false);
   };
 
   return (
@@ -185,25 +193,37 @@ export default function LearningPage({
                 {selectedQuiz.slides[currentSlide].question}
               </Text>
 
-              {selectedQuiz.slides[currentSlide].options.map((option, index) => (
-                <TouchableOpacity
-                  key={index}
-                  style={[
-                    styles.optionButton,
-                    selectedAnswer === index && styles.optionButtonSelected,
-                  ]}
-                  onPress={() => handleAnswerSelect(index)}
-                >
-                  <Text
+              {selectedQuiz.slides[currentSlide].options.map((option, index) => {
+                const isCorrect = index === selectedQuiz.slides[currentSlide].correct;
+                const isSelected = selectedAnswer === index;
+                const showCorrect = showResults && isCorrect;
+                const showIncorrect = showResults && isSelected && !isCorrect;
+
+                return (
+                  <TouchableOpacity
+                    key={index}
                     style={[
-                      styles.optionText,
-                      selectedAnswer === index && styles.optionTextSelected,
+                      styles.optionButton,
+                      showCorrect && styles.optionButtonCorrect,
+                      showIncorrect && styles.optionButtonIncorrect,
+                      !showResults && isSelected && styles.optionButtonSelected,
                     ]}
+                    onPress={() => handleAnswerSelect(index)}
+                    disabled={showResults}
                   >
-                    {option}
-                  </Text>
-                </TouchableOpacity>
-              ))}
+                    <Text
+                      style={[
+                        styles.optionText,
+                        showCorrect && styles.optionTextCorrect,
+                        showIncorrect && styles.optionTextIncorrect,
+                        !showResults && isSelected && styles.optionTextSelected,
+                      ]}
+                    >
+                      {option}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
             </View>
 
             <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
@@ -346,12 +366,28 @@ const styles = StyleSheet.create({
     backgroundColor: '#E3F2FD',
     borderColor: '#2196F3',
   },
+  optionButtonCorrect: {
+    backgroundColor: '#E8F5E9',
+    borderColor: '#4CAF50',
+  },
+  optionButtonIncorrect: {
+    backgroundColor: '#FFEBEE',
+    borderColor: '#F44336',
+  },
   optionText: {
     fontSize: 16,
     color: '#333',
   },
   optionTextSelected: {
     color: '#2196F3',
+    fontWeight: 'bold',
+  },
+  optionTextCorrect: {
+    color: '#4CAF50',
+    fontWeight: 'bold',
+  },
+  optionTextIncorrect: {
+    color: '#F44336',
     fontWeight: 'bold',
   },
   nextButton: {
