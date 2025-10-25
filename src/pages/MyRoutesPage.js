@@ -16,6 +16,8 @@ export default function MyRoutesPage({
   navigateToCreateRoute,
   savedRoutes,
   viewRoute,
+  schoolRouteId,
+  setSchoolRoute,
 }) {
   return (
     <View style={commonStyles.container}>
@@ -50,17 +52,35 @@ export default function MyRoutesPage({
             <Text style={styles.noRoutesText}>No routes yet. Create your first route!</Text>
           ) : (
             savedRoutes.map((route) => (
-              <TouchableOpacity
-                key={route.id}
-                style={styles.routeItem}
-                onPress={() => viewRoute(route.id)}
-              >
-                <View>
-                  <Text style={styles.routeName}>{route.name}</Text>
-                  <Text style={styles.routeDate}>{route.date}</Text>
-                </View>
-                <Text style={styles.waypointCount}>{route.waypoints.length} points</Text>
-              </TouchableOpacity>
+              <View key={route.id} style={styles.routeItemContainer}>
+                <TouchableOpacity
+                  style={[
+                    styles.routeItem,
+                    schoolRouteId === route.id && styles.routeItemSchool,
+                  ]}
+                  onPress={() => viewRoute(route.id)}
+                >
+                  <View style={styles.routeInfo}>
+                    <Text style={styles.routeName}>{route.name}</Text>
+                    <Text style={styles.routeDate}>{route.date}</Text>
+                  </View>
+                  <Text style={styles.waypointCount}>{route.waypoints.length} points</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[
+                    styles.setSchoolButton,
+                    schoolRouteId === route.id && styles.setSchoolButtonActive,
+                  ]}
+                  onPress={() => setSchoolRoute(route.id)}
+                >
+                  <Text style={[
+                    styles.setSchoolButtonText,
+                    schoolRouteId === route.id && styles.setSchoolButtonTextActive,
+                  ]}>
+                    {schoolRouteId === route.id ? '✓ School Route' : 'Set as School Route'}
+                  </Text>
+                </TouchableOpacity>
+              </View>
             ))
           )}
         </View>
@@ -118,6 +138,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 20,
   },
+  routeItemContainer: {
+    marginBottom: 15,
+  },
   routeItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -126,12 +149,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     backgroundColor: '#fff',
     borderRadius: 8,
-    marginBottom: 10,
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0,
     elevation: 2,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
+  },
+  routeItemSchool: {
+    borderColor: '#4CAF50',
+    borderWidth: 2,
+    borderBottomWidth: 0,
+  },
+  routeInfo: {
+    flex: 1,
   },
   routeName: {
     fontSize: 18,
@@ -146,6 +178,29 @@ const styles = StyleSheet.create({
   waypointCount: {
     fontSize: 14,
     color: '#666',
+  },
+  setSchoolButton: {
+    backgroundColor: '#f5f5f5',
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderBottomLeftRadius: 8,
+    borderBottomRightRadius: 8,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+    borderTopWidth: 0,
+  },
+  setSchoolButtonActive: {
+    backgroundColor: '#4CAF50',
+    borderColor: '#4CAF50',
+  },
+  setSchoolButtonText: {
+    fontSize: 14,
+    color: '#666',
+    fontWeight: '600',
+  },
+  setSchoolButtonTextActive: {
+    color: '#fff',
   },
   headerRight: {
     flexDirection: 'row',

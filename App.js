@@ -21,6 +21,8 @@ export default function App() {
   const [savedRoutes, setSavedRoutes] = useState([]);
   const [waypoints, setWaypoints] = useState([]);
   const [selectedRouteId, setSelectedRouteId] = useState(null);
+  const [schoolRouteId, setSchoolRouteId] = useState(null);
+  const [showSchoolRoute, setShowSchoolRoute] = useState(false);
   const [totalPoints, setTotalPoints] = useState(0);
   const [recentRoutes, setRecentRoutes] = useState([]);
   const slideAnim = useRef(new Animated.Value(width)).current;
@@ -112,7 +114,21 @@ export default function App() {
 
   const viewRoute = (routeId) => {
     setSelectedRouteId(routeId);
+    setShowSchoolRoute(false);
     setCurrentPage('map');
+  };
+
+  const setSchoolRoute = (routeId) => {
+    setSchoolRouteId(routeId);
+  };
+
+  const handleGoToSchool = () => {
+    if (schoolRouteId) {
+      setSelectedRouteId(null);
+      setShowSchoolRoute(true);
+    } else {
+      alert('Please set a route to school first from My Routes page');
+    }
   };
 
   const handleSimulateArrival = async () => {
@@ -181,6 +197,8 @@ export default function App() {
         navigateToCreateRoute={navigateToCreateRoute}
         savedRoutes={savedRoutes}
         viewRoute={viewRoute}
+        schoolRouteId={schoolRouteId}
+        setSchoolRoute={setSchoolRoute}
       />
     );
   }
@@ -224,6 +242,9 @@ export default function App() {
       location={location}
       savedRoutes={savedRoutes}
       selectedRouteId={selectedRouteId}
+      schoolRouteId={schoolRouteId}
+      showSchoolRoute={showSchoolRoute}
+      handleGoToSchool={handleGoToSchool}
       toggleMenu={toggleMenu}
       menuOpen={menuOpen}
       slideAnim={slideAnim}

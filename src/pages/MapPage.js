@@ -8,7 +8,10 @@ import SideMenu from '../components/SideMenu';
 export default function MapPage({ 
   location, 
   savedRoutes, 
-  selectedRouteId, 
+  selectedRouteId,
+  schoolRouteId,
+  showSchoolRoute,
+  handleGoToSchool, 
   toggleMenu, 
   menuOpen, 
   slideAnim, 
@@ -47,6 +50,13 @@ export default function MapPage({
             strokeWidth={4}
           />
         )}
+        {showSchoolRoute && schoolRouteId && savedRoutes.find(r => r.id === schoolRouteId) && (
+          <Polyline
+            coordinates={savedRoutes.find(r => r.id === schoolRouteId).waypoints}
+            strokeColor="#2196F3"
+            strokeWidth={5}
+          />
+        )}
       </MapView>
 
       <View style={commonStyles.header}>
@@ -79,6 +89,13 @@ export default function MapPage({
           resizeMode="contain"
         />
       </TouchableOpacity>
+
+      {schoolRouteId && (
+        <TouchableOpacity style={styles.goToSchoolButton} onPress={handleGoToSchool}>
+          <Text style={styles.goToSchoolButtonText}>Go to school</Text>
+        </TouchableOpacity>
+      )}
+
       <StatusBar style="auto" />
     </View>
   );
@@ -125,5 +142,27 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 14,
     fontWeight: 'bold',
+  },
+  goToSchoolButton: {
+    position: 'absolute',
+    bottom: 30,
+    left: '50%',
+    transform: [{ translateX: -75 }],
+    backgroundColor: '#2196F3',
+    paddingVertical: 16,
+    paddingHorizontal: 32,
+    borderRadius: 30,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    minWidth: 150,
+  },
+  goToSchoolButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
 });
