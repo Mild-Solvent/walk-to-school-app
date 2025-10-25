@@ -20,6 +20,7 @@ export default function MapPage({
   navigateToYourPet, 
   navigateToMyRoutes,
   navigateToLearning,
+  navigateToShop,
   totalPoints 
 }) {
   const [noRouteModalVisible, setNoRouteModalVisible] = useState(false);
@@ -123,6 +124,7 @@ export default function MapPage({
         navigateToYourPet={navigateToYourPet}
         navigateToMyRoutes={navigateToMyRoutes}
         navigateToLearning={navigateToLearning}
+        navigateToShop={navigateToShop}
       />
 
       <Animated.View style={{ transform: [{ scale: buttonScale }] }}>
@@ -135,9 +137,14 @@ export default function MapPage({
       </TouchableOpacity>
       </Animated.View>
 
-      <TouchableOpacity style={styles.goToSchoolButton} onPress={handleGoToSchoolClick}>
-        <Text style={styles.goToSchoolButtonText}>Go to school</Text>
-      </TouchableOpacity>
+      <View style={styles.bottomButtonsContainer}>
+        <TouchableOpacity style={styles.shopButton} onPress={navigateToShop}>
+          <Text style={styles.shopButtonIcon}>🛒</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.goToSchoolButton} onPress={handleGoToSchoolClick}>
+          <Text style={styles.goToSchoolButtonText}>Go to school</Text>
+        </TouchableOpacity>
+      </View>
 
       <Modal
         animationType="fade"
@@ -217,11 +224,30 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold',
   },
-  goToSchoolButton: {
+  bottomButtonsContainer: {
     position: 'absolute',
     bottom: 30,
-    left: '50%',
-    transform: [{ translateX: -75 }],
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 15,
+    paddingHorizontal: 20,
+  },
+  shopButton: {
+    backgroundColor: colors.primaryLight,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    ...shadows.glow,
+  },
+  shopButtonIcon: {
+    fontSize: 28,
+  },
+  goToSchoolButton: {
     backgroundColor: colors.primaryLight,
     paddingVertical: 16,
     paddingHorizontal: 32,

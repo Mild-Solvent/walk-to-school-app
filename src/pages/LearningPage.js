@@ -61,6 +61,7 @@ export default function LearningPage({
   navigateToYourPet,
   navigateToMyRoutes,
   navigateToLearning,
+  navigateToShop,
   totalPoints,
   addPoints,
 }) {
@@ -257,6 +258,7 @@ export default function LearningPage({
         navigateToYourPet={navigateToYourPet}
         navigateToMyRoutes={navigateToMyRoutes}
         navigateToLearning={navigateToLearning}
+        navigateToShop={navigateToShop}
       />
 
       <StatusBar style="auto" />

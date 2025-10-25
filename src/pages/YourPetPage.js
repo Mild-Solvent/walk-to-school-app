@@ -17,6 +17,7 @@ export default function YourPetPage({
   navigateToYourPet,
   navigateToMyRoutes,
   navigateToLearning,
+  navigateToShop,
   totalPoints,
   recentRoutes,
   isAnimating,
@@ -199,6 +200,7 @@ export default function YourPetPage({
         navigateToYourPet={navigateToYourPet}
         navigateToMyRoutes={navigateToMyRoutes}
         navigateToLearning={navigateToLearning}
+        navigateToShop={navigateToShop}
       />
 
       <Toast 

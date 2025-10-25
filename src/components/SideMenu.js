@@ -9,7 +9,8 @@ export default function SideMenu({
   toggleMenu, 
   navigateToYourPet, 
   navigateToMyRoutes,
-  navigateToLearning 
+  navigateToLearning,
+  navigateToShop 
 }) {
   return (
     <>
@@ -37,6 +38,9 @@ export default function SideMenu({
           </TouchableOpacity>
           <TouchableOpacity onPress={navigateToLearning}>
             <Text style={styles.menuItem}>Learning</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={navigateToShop}>
+            <Text style={styles.menuItem}>Shop</Text>
           </TouchableOpacity>
           <Text style={styles.menuItem}>Settings</Text>
           <Text style={styles.menuItem}>About</Text>

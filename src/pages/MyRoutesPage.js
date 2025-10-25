@@ -14,6 +14,7 @@ export default function MyRoutesPage({
   navigateToYourPet,
   navigateToMyRoutes,
   navigateToLearning,
+  navigateToShop,
   totalPoints,
   navigateToCreateRoute,
   savedRoutes,
@@ -95,6 +96,7 @@ export default function MyRoutesPage({
         navigateToYourPet={navigateToYourPet}
         navigateToMyRoutes={navigateToMyRoutes}
         navigateToLearning={navigateToLearning}
+        navigateToShop={navigateToShop}
       />
 
       <StatusBar style="auto" />

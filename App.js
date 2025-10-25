@@ -9,6 +9,7 @@ import YourPetPage from './src/pages/YourPetPage';
 import MyRoutesPage from './src/pages/MyRoutesPage';
 import CreateRoutePage from './src/pages/CreateRoutePage';
 import LearningPage from './src/pages/LearningPage';
+import ShopPage from './src/pages/ShopPage';
 
 const { width } = Dimensions.get('window');
 
@@ -29,6 +30,7 @@ export default function App() {
   const [recentRoutes, setRecentRoutes] = useState([]);
   const [arrivalCount, setArrivalCount] = useState(0);
   const [unlockedAchievements, setUnlockedAchievements] = useState([]);
+  const [purchasedItems, setPurchasedItems] = useState([]);
   const slideAnim = useRef(new Animated.Value(width)).current;
 
   useEffect(() => {
@@ -79,6 +81,11 @@ export default function App() {
 
   const navigateToLearning = () => {
     setCurrentPage('learning');
+    setMenuOpen(false);
+  };
+
+  const navigateToShop = () => {
+    setCurrentPage('shop');
     setMenuOpen(false);
   };
 
@@ -153,6 +160,11 @@ export default function App() {
     }, 3000); // Adjust based on video length
   };
 
+  const handlePurchase = (item) => {
+    setTotalPoints(totalPoints - item.price);
+    setPurchasedItems([...purchasedItems, item.id]);
+  };
+
   if (loading) {
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
@@ -175,6 +187,24 @@ export default function App() {
   }
 
   // Route to appropriate page
+  if (currentPage === 'shop') {
+    return (
+      <ShopPage
+        navigateToMap={navigateToMap}
+        toggleMenu={toggleMenu}
+        menuOpen={menuOpen}
+        slideAnim={slideAnim}
+        navigateToYourPet={navigateToYourPet}
+        navigateToMyRoutes={navigateToMyRoutes}
+        navigateToLearning={navigateToLearning}
+        navigateToShop={navigateToShop}
+        totalPoints={totalPoints}
+        purchasedItems={purchasedItems}
+        onPurchase={handlePurchase}
+      />
+    );
+  }
+
   if (currentPage === 'learning') {
     return (
       <LearningPage
@@ -185,6 +215,7 @@ export default function App() {
         navigateToYourPet={navigateToYourPet}
         navigateToMyRoutes={navigateToMyRoutes}
         navigateToLearning={navigateToLearning}
+        navigateToShop={navigateToShop}
         totalPoints={totalPoints}
         addPoints={addPoints}
       />
@@ -201,6 +232,7 @@ export default function App() {
         navigateToYourPet={navigateToYourPet}
         navigateToMyRoutes={navigateToMyRoutes}
         navigateToLearning={navigateToLearning}
+        navigateToShop={navigateToShop}
         totalPoints={totalPoints}
         navigateToCreateRoute={navigateToCreateRoute}
         savedRoutes={savedRoutes}
@@ -233,6 +265,7 @@ export default function App() {
         navigateToYourPet={navigateToYourPet}
         navigateToMyRoutes={navigateToMyRoutes}
         navigateToLearning={navigateToLearning}
+        navigateToShop={navigateToShop}
         totalPoints={totalPoints}
         recentRoutes={recentRoutes}
         isAnimating={isAnimating}
@@ -259,6 +292,7 @@ export default function App() {
       navigateToYourPet={navigateToYourPet}
       navigateToMyRoutes={navigateToMyRoutes}
       navigateToLearning={navigateToLearning}
+      navigateToShop={navigateToShop}
       totalPoints={totalPoints}
     />
   );
