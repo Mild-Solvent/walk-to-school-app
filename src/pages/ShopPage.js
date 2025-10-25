@@ -67,22 +67,23 @@ export default function ShopPage({
     const isPurchased = purchasedItems.includes(item.id);
 
     return (
-      <View key={item.id} style={styles.shopItem}>
-        <Image source={item.image} style={styles.itemImage} resizeMode="contain" />
-        <View style={styles.itemInfo}>
-          <Text style={styles.itemName}>{item.name}</Text>
-          <Text style={styles.itemPrice}>{item.price} pts</Text>
+      <TouchableOpacity
+        key={item.id}
+        style={styles.shopItem}
+        onPress={() => handlePurchase(item)}
+        disabled={isPurchased}
+      >
+        <View style={styles.imageContainer}>
+          <Image source={item.image} style={styles.itemImage} resizeMode="contain" />
         </View>
-        <TouchableOpacity
-          style={[styles.buyButton, isPurchased && styles.buyButtonDisabled]}
-          onPress={() => handlePurchase(item)}
-          disabled={isPurchased}
-        >
+        <Text style={styles.itemName}>{item.name}</Text>
+        <Text style={styles.itemPrice}>{item.price} pts</Text>
+        <View style={[styles.buyButton, isPurchased && styles.buyButtonDisabled]}>
           <Text style={styles.buyButtonText}>
             {isPurchased ? 'Owned' : 'Buy'}
           </Text>
-        </TouchableOpacity>
-      </View>
+        </View>
+      </TouchableOpacity>
     );
   };
 
@@ -126,7 +127,9 @@ export default function ShopPage({
         </View>
 
         <ScrollView style={styles.shopContent}>
-          {shopItems[selectedTab].map(renderShopItem)}
+          <View style={styles.gridContainer}>
+            {shopItems[selectedTab].map(renderShopItem)}
+          </View>
         </ScrollView>
 
         <SideMenu
@@ -153,7 +156,13 @@ const styles = StyleSheet.create({
   shopContent: {
     flex: 1,
     marginTop: 60,
+  },
+  gridContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
     paddingHorizontal: 20,
+    paddingBottom: 20,
   },
   headerRight: {
     flexDirection: 'row',
@@ -202,38 +211,50 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   shopItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    width: '48%',
     backgroundColor: colors.surface,
     borderRadius: borderRadius.lg,
     padding: 16,
     marginVertical: 8,
+    alignItems: 'center',
     ...shadows.medium,
   },
-  itemImage: {
-    width: 60,
-    height: 60,
-    marginRight: 16,
+  imageContainer: {
+    width: 80,
+    height: 80,
+    borderRadius: borderRadius.md,
+    backgroundColor: 'rgba(199, 125, 255, 0.15)',
+    borderWidth: 1,
+    borderColor: 'rgba(199, 125, 255, 0.3)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 12,
   },
-  itemInfo: {
-    flex: 1,
+  itemImage: {
+    width: 65,
+    height: 65,
   },
   itemName: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
     color: colors.text,
-    marginBottom: 4,
+    marginBottom: 6,
+    textAlign: 'center',
   },
   itemPrice: {
     fontSize: 14,
     color: colors.accent,
     fontWeight: '600',
+    marginBottom: 10,
+    textAlign: 'center',
   },
   buyButton: {
     backgroundColor: colors.primaryLight,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
     borderRadius: borderRadius.lg,
+    width: '100%',
+    alignItems: 'center',
     ...shadows.small,
   },
   buyButtonDisabled: {
