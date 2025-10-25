@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Alert, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { commonStyles } from '../styles/commonStyles';
 import { colors, shadows, borderRadius, spacing } from '../styles/theme';
@@ -23,26 +23,19 @@ export default function ShopPage({
 
   const shopItems = {
     pets: [
-      { id: 'pet1', name: '🐱 Cat', price: 25, emoji: '🐱' },
-      { id: 'pet2', name: '🐶 Dog', price: 25, emoji: '🐶' },
-      { id: 'pet3', name: '🐰 Rabbit', price: 20, emoji: '🐰' },
-      { id: 'pet4', name: '🦊 Fox', price: 30, emoji: '🦊' },
-      { id: 'pet5', name: '🐼 Panda', price: 30, emoji: '🐼' },
-      { id: 'pet6', name: '🦁 Lion', price: 30, emoji: '🦁' },
-      { id: 'pet7', name: '🐯 Tiger', price: 30, emoji: '🐯' },
-      { id: 'pet8', name: '🐸 Frog', price: 15, emoji: '🐸' },
+      { id: 'crocodile', name: 'Crocodile', price: 30, image: require('../../assets/shop/pets/crocodile.png') },
+      { id: 'fox', name: 'Fox', price: 30, image: require('../../assets/shop/pets/fox.png') },
+      { id: 'frog', name: 'Frog', price: 15, image: require('../../assets/shop/pets/frog.png') },
+      { id: 'lion', name: 'Lion', price: 30, image: require('../../assets/shop/pets/lion.png') },
+      { id: 'robot', name: 'Robot', price: 25, image: require('../../assets/shop/pets/robot.png') },
+      { id: 'sheep', name: 'Sheep', price: 20, image: require('../../assets/shop/pets/sheep.png') },
     ],
     accessories: [
-      { id: 'acc1', name: '👑 Crown', price: 20, emoji: '👑' },
-      { id: 'acc2', name: '🎩 Top Hat', price: 15, emoji: '🎩' },
-      { id: 'acc3', name: '🎀 Bow', price: 10, emoji: '🎀' },
-      { id: 'acc4', name: '👓 Glasses', price: 12, emoji: '👓' },
-      { id: 'acc5', name: '🎭 Mask', price: 18, emoji: '🎭' },
-      { id: 'acc6', name: '🧣 Scarf', price: 15, emoji: '🧣' },
-      { id: 'acc7', name: '⭐ Star Badge', price: 8, emoji: '⭐' },
-      { id: 'acc8', name: '🌸 Flower', price: 10, emoji: '🌸' },
-      { id: 'acc9', name: '🎒 Backpack', price: 20, emoji: '🎒' },
-      { id: 'acc10', name: '🦴 Bone', price: 5, emoji: '🦴' },
+      { id: 'cowboy_hat', name: 'Cowboy Hat', price: 15, image: require('../../assets/shop/accesories/cowboy_hat.png') },
+      { id: 'crown', name: 'Crown', price: 20, image: require('../../assets/shop/accesories/crown.png') },
+      { id: 'glasses', name: 'Glasses', price: 12, image: require('../../assets/shop/accesories/glasses.png') },
+      { id: 'part_hat', name: 'Party Hat', price: 10, image: require('../../assets/shop/accesories/part hat.png') },
+      { id: 'staff', name: 'Staff', price: 18, image: require('../../assets/shop/accesories/staff.png') },
     ],
   };
 
@@ -75,7 +68,7 @@ export default function ShopPage({
 
     return (
       <View key={item.id} style={styles.shopItem}>
-        <Text style={styles.itemEmoji}>{item.emoji}</Text>
+        <Image source={item.image} style={styles.itemImage} resizeMode="contain" />
         <View style={styles.itemInfo}>
           <Text style={styles.itemName}>{item.name}</Text>
           <Text style={styles.itemPrice}>{item.price} pts</Text>
@@ -217,8 +210,9 @@ const styles = StyleSheet.create({
     marginVertical: 8,
     ...shadows.medium,
   },
-  itemEmoji: {
-    fontSize: 48,
+  itemImage: {
+    width: 60,
+    height: 60,
     marginRight: 16,
   },
   itemInfo: {
