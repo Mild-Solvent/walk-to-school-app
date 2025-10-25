@@ -35,10 +35,16 @@
         "googleMaps": {
           "apiKey": ""
         }
-      }
+      },
+      "package": "com.mild_solvent.walktoschoolapp"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "d814e3cf-7acc-4d16-b2f8-63a599083df7"
+      }
     }
   }
 }
