@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, View, Text, ActivityIndicator } from 'react-native';
+import { StyleSheet, View, Text, ActivityIndicator, TouchableOpacity, Image } from 'react-native';
 import { useState, useEffect } from 'react';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
@@ -65,6 +65,13 @@ export default function App() {
           />
         )}
       </MapView>
+      <TouchableOpacity style={styles.dragonButton}>
+        <Image
+          source={require('./assets/dragon.png')}
+          style={styles.dragonImage}
+          resizeMode="contain"
+        />
+      </TouchableOpacity>
       <StatusBar style="auto" />
     </View>
   );
@@ -90,5 +97,25 @@ const styles = StyleSheet.create({
     fontSize: 16,
     padding: 20,
     textAlign: 'center',
+  },
+  dragonButton: {
+    position: 'absolute',
+    bottom: 30,
+    right: 30,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: '#fff',
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+  },
+  dragonImage: {
+    width: 40,
+    height: 40,
   },
 });
