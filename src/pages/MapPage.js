@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, Image, Modal, StyleSheet } from 'react-native';
 import MapView, { Marker, Polyline } from 'react-native-maps';
 import { commonStyles } from '../styles/commonStyles';
 import SideMenu from '../components/SideMenu';
@@ -20,6 +20,15 @@ export default function MapPage({
   navigateToLearning,
   totalPoints 
 }) {
+  const [noRouteModalVisible, setNoRouteModalVisible] = useState(false);
+
+  const handleGoToSchoolClick = () => {
+    if (schoolRouteId) {
+      handleGoToSchool();
+    } else {
+      setNoRouteModalVisible(true);
+    }
+  };
   return (
     <View style={commonStyles.container}>
       <MapView
@@ -90,11 +99,38 @@ export default function MapPage({
         />
       </TouchableOpacity>
 
-      {schoolRouteId && (
-        <TouchableOpacity style={styles.goToSchoolButton} onPress={handleGoToSchool}>
-          <Text style={styles.goToSchoolButtonText}>Go to school</Text>
-        </TouchableOpacity>
-      )}
+      <TouchableOpacity style={styles.goToSchoolButton} onPress={handleGoToSchoolClick}>
+        <Text style={styles.goToSchoolButtonText}>Go to school</Text>
+      </TouchableOpacity>
+
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={noRouteModalVisible}
+        onRequestClose={() => setNoRouteModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>No Route Set</Text>
+            <Text style={styles.modalMessage}>Please select or create a route</Text>
+            <TouchableOpacity
+              style={styles.modalButton}
+              onPress={() => {
+                setNoRouteModalVisible(false);
+                navigateToMyRoutes();
+              }}
+            >
+              <Text style={styles.modalButtonText}>Go to My Routes</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.modalButtonSecondary}
+              onPress={() => setNoRouteModalVisible(false)}
+            >
+              <Text style={styles.modalButtonSecondaryText}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
 
       <StatusBar style="auto" />
     </View>
@@ -164,5 +200,56 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     textAlign: 'center',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    padding: 30,
+    width: '80%',
+    alignItems: 'center',
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+  },
+  modalTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 10,
+  },
+  modalMessage: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+    marginBottom: 25,
+  },
+  modalButton: {
+    backgroundColor: '#2196F3',
+    paddingVertical: 14,
+    paddingHorizontal: 30,
+    borderRadius: 25,
+    width: '100%',
+    marginBottom: 10,
+  },
+  modalButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  modalButtonSecondary: {
+    paddingVertical: 12,
+  },
+  modalButtonSecondaryText: {
+    color: '#666',
+    fontSize: 16,
   },
 });

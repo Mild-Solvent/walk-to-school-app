@@ -64,7 +64,6 @@ export default function MyRoutesPage({
                     <Text style={styles.routeName}>{route.name}</Text>
                     <Text style={styles.routeDate}>{route.date}</Text>
                   </View>
-                  <Text style={styles.waypointCount}>{route.waypoints.length} points</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={[
