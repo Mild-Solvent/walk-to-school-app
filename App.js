@@ -6,6 +6,7 @@ import MapPage from './src/pages/MapPage';
 import YourPetPage from './src/pages/YourPetPage';
 import MyRoutesPage from './src/pages/MyRoutesPage';
 import CreateRoutePage from './src/pages/CreateRoutePage';
+import LearningPage from './src/pages/LearningPage';
 
 const { width } = Dimensions.get('window');
 
@@ -20,6 +21,7 @@ export default function App() {
   const [savedRoutes, setSavedRoutes] = useState([]);
   const [waypoints, setWaypoints] = useState([]);
   const [selectedRouteId, setSelectedRouteId] = useState(null);
+  const [totalPoints, setTotalPoints] = useState(0);
   const slideAnim = useRef(new Animated.Value(width)).current;
   const videoRef = useRef(null);
 
@@ -69,6 +71,24 @@ export default function App() {
     setCurrentPage('createroute');
   };
 
+  const navigateToLearning = () => {
+    setCurrentPage('learning');
+    setMenuOpen(false);
+  };
+
+  const addPoints = (points) => {
+    setTotalPoints(totalPoints + points);
+  };
+
+  const addRecentRoute = () => {
+    const newRoute = {
+      date: new Date().toLocaleDateString(),
+      points: 5,
+    };
+    // This would be added to a recent routes list
+    return newRoute;
+  };
+
   const handleMapLongPress = (e) => {
     const coordinate = e.nativeEvent.coordinate;
     setWaypoints([...waypoints, coordinate]);
@@ -97,6 +117,8 @@ export default function App() {
 
   const handleSimulateArrival = async () => {
     setIsAnimating(true);
+    addPoints(5);
+    addRecentRoute();
     if (videoRef.current) {
       await videoRef.current.playAsync();
     }
@@ -129,6 +151,21 @@ export default function App() {
   }
 
   // Route to appropriate page
+  if (currentPage === 'learning') {
+    return (
+      <LearningPage
+        navigateToMap={navigateToMap}
+        toggleMenu={toggleMenu}
+        menuOpen={menuOpen}
+        slideAnim={slideAnim}
+        navigateToYourPet={navigateToYourPet}
+        navigateToMyRoutes={navigateToMyRoutes}
+        navigateToLearning={navigateToLearning}
+        addPoints={addPoints}
+      />
+    );
+  }
+
   if (currentPage === 'myroutes') {
     return (
       <MyRoutesPage
@@ -138,6 +175,7 @@ export default function App() {
         slideAnim={slideAnim}
         navigateToYourPet={navigateToYourPet}
         navigateToMyRoutes={navigateToMyRoutes}
+        navigateToLearning={navigateToLearning}
         navigateToCreateRoute={navigateToCreateRoute}
         savedRoutes={savedRoutes}
         viewRoute={viewRoute}
@@ -166,6 +204,7 @@ export default function App() {
         slideAnim={slideAnim}
         navigateToYourPet={navigateToYourPet}
         navigateToMyRoutes={navigateToMyRoutes}
+        navigateToLearning={navigateToLearning}
         isAnimating={isAnimating}
         handleSimulateArrival={handleSimulateArrival}
         videoRef={videoRef}
@@ -186,6 +225,8 @@ export default function App() {
       slideAnim={slideAnim}
       navigateToYourPet={navigateToYourPet}
       navigateToMyRoutes={navigateToMyRoutes}
+      navigateToLearning={navigateToLearning}
+      totalPoints={totalPoints}
     />
   );
 }

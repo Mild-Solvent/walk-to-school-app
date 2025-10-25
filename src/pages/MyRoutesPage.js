@@ -11,6 +11,7 @@ export default function MyRoutesPage({
   slideAnim,
   navigateToYourPet,
   navigateToMyRoutes,
+  navigateToLearning,
   navigateToCreateRoute,
   savedRoutes,
   viewRoute,
@@ -65,6 +66,7 @@ export default function MyRoutesPage({
         toggleMenu={toggleMenu}
         navigateToYourPet={navigateToYourPet}
         navigateToMyRoutes={navigateToMyRoutes}
+        navigateToLearning={navigateToLearning}
       />
 
       <StatusBar style="auto" />

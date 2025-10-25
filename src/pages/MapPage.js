@@ -13,7 +13,9 @@ export default function MapPage({
   menuOpen, 
   slideAnim, 
   navigateToYourPet, 
-  navigateToMyRoutes 
+  navigateToMyRoutes,
+  navigateToLearning,
+  totalPoints 
 }) {
   return (
     <View style={commonStyles.container}>
@@ -49,11 +51,16 @@ export default function MapPage({
 
       <View style={commonStyles.header}>
         <Text style={commonStyles.appTitle}>Walk to school</Text>
-        <TouchableOpacity onPress={toggleMenu} style={commonStyles.burgerButton}>
-          <View style={commonStyles.burgerLine} />
-          <View style={commonStyles.burgerLine} />
-          <View style={commonStyles.burgerLine} />
-        </TouchableOpacity>
+        <View style={styles.headerRight}>
+          <TouchableOpacity style={styles.pointsBadge}>
+            <Text style={styles.pointsText}>{totalPoints} pts</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={toggleMenu} style={commonStyles.burgerButton}>
+            <View style={commonStyles.burgerLine} />
+            <View style={commonStyles.burgerLine} />
+            <View style={commonStyles.burgerLine} />
+          </TouchableOpacity>
+        </View>
       </View>
 
       <SideMenu
@@ -62,6 +69,7 @@ export default function MapPage({
         toggleMenu={toggleMenu}
         navigateToYourPet={navigateToYourPet}
         navigateToMyRoutes={navigateToMyRoutes}
+        navigateToLearning={navigateToLearning}
       />
 
       <TouchableOpacity style={styles.dragonButton} onPress={navigateToYourPet}>
@@ -100,5 +108,22 @@ const styles = StyleSheet.create({
   dragonImage: {
     width: 40,
     height: 40,
+  },
+  headerRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  pointsBadge: {
+    backgroundColor: '#4CAF50',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    marginRight: 5,
+  },
+  pointsText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: 'bold',
   },
 });

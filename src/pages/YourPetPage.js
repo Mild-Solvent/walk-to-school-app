@@ -12,6 +12,7 @@ export default function YourPetPage({
   slideAnim,
   navigateToYourPet,
   navigateToMyRoutes,
+  navigateToLearning,
   isAnimating,
   handleSimulateArrival,
   videoRef,
@@ -129,6 +130,7 @@ export default function YourPetPage({
         toggleMenu={toggleMenu}
         navigateToYourPet={navigateToYourPet}
         navigateToMyRoutes={navigateToMyRoutes}
+        navigateToLearning={navigateToLearning}
       />
 
       <StatusBar style="auto" />
