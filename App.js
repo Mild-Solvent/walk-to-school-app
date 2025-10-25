@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View, Text, ActivityIndicator, TouchableOpacity, Image, Animated, Dimensions, ScrollView, Modal } from 'react-native';
 import { useState, useEffect, useRef } from 'react';
-import MapView, { Marker } from 'react-native-maps';
+import MapView, { Marker, Polyline } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { Video } from 'expo-av';
 
@@ -12,9 +12,12 @@ export default function App() {
   const [errorMsg, setErrorMsg] = useState(null);
   const [loading, setLoading] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [currentPage, setCurrentPage] = useState('map'); // 'map' or 'yourpet'
+  const [currentPage, setCurrentPage] = useState('map'); // 'map', 'yourpet', 'myroutes', 'createroute'
   const [achievementsModalVisible, setAchievementsModalVisible] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [savedRoutes, setSavedRoutes] = useState([]);
+  const [waypoints, setWaypoints] = useState([]);
+  const [selectedRouteId, setSelectedRouteId] = useState(null);
   const slideAnim = useRef(new Animated.Value(width)).current;
   const videoRef = useRef(null);
 
@@ -54,6 +57,42 @@ useEffect(() => {
     setCurrentPage('map');
   };
 
+  const navigateToMyRoutes = () => {
+    setCurrentPage('myroutes');
+    setMenuOpen(false);
+  };
+
+  const navigateToCreateRoute = () => {
+    setWaypoints([]);
+    setCurrentPage('createroute');
+  };
+
+  const handleMapLongPress = (e) => {
+    const coordinate = e.nativeEvent.coordinate;
+    setWaypoints([...waypoints, coordinate]);
+  };
+
+  const saveRoute = () => {
+    if (waypoints.length < 2) {
+      alert('Please add at least 2 waypoints');
+      return;
+    }
+    const newRoute = {
+      id: Date.now().toString(),
+      name: `Route ${savedRoutes.length + 1}`,
+      date: new Date().toLocaleDateString(),
+      waypoints: waypoints,
+    };
+    setSavedRoutes([...savedRoutes, newRoute]);
+    setWaypoints([]);
+    setCurrentPage('myroutes');
+  };
+
+  const viewRoute = (routeId) => {
+    setSelectedRouteId(routeId);
+    setCurrentPage('map');
+  };
+
   const handleSimulateArrival = async () => {
     setIsAnimating(true);
     if (videoRef.current) {
@@ -87,7 +126,155 @@ useEffect(() => {
     );
   }
 
-if (currentPage === 'yourpet') {
+// My Routes Page
+  if (currentPage === 'myroutes') {
+    return (
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={navigateToMap} style={styles.backButton}>
+            <Text style={styles.backButtonText}>← Back</Text>
+          </TouchableOpacity>
+          <Text style={styles.appTitle}>My Routes</Text>
+          <TouchableOpacity onPress={toggleMenu} style={styles.burgerButton}>
+            <View style={styles.burgerLine} />
+            <View style={styles.burgerLine} />
+            <View style={styles.burgerLine} />
+          </TouchableOpacity>
+        </View>
+
+        <ScrollView style={styles.petPageContent}>
+          <TouchableOpacity 
+            style={styles.createRouteButton}
+            onPress={navigateToCreateRoute}
+          >
+            <Text style={styles.createRouteButtonText}>Create Route</Text>
+          </TouchableOpacity>
+
+          <View style={styles.routesContainer}>
+            <Text style={styles.routesTitle}>Saved Routes</Text>
+            {savedRoutes.length === 0 ? (
+              <Text style={styles.noRoutesText}>No routes yet. Create your first route!</Text>
+            ) : (
+              savedRoutes.map((route) => (
+                <TouchableOpacity 
+                  key={route.id}
+                  style={styles.routeItem}
+                  onPress={() => viewRoute(route.id)}
+                >
+                  <View>
+                    <Text style={styles.routeName}>{route.name}</Text>
+                    <Text style={styles.routeDate}>{route.date}</Text>
+                  </View>
+                  <Text style={styles.waypointCount}>{route.waypoints.length} points</Text>
+                </TouchableOpacity>
+              ))
+            )}
+          </View>
+        </ScrollView>
+
+        {/* Side Menu Panel */}
+        <Animated.View
+          style={[
+            styles.sideMenu,
+            {
+              transform: [{ translateX: slideAnim }],
+            },
+          ]}
+        >
+          <View style={styles.menuHeader}>
+            <Text style={styles.menuTitle}>Menu</Text>
+            <TouchableOpacity onPress={toggleMenu}>
+              <Text style={styles.closeButton}>✕</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.menuContent}>
+            <Text style={styles.menuItem}>Profile</Text>
+            <TouchableOpacity onPress={navigateToYourPet}>
+              <Text style={styles.menuItem}>Your pet</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={navigateToMyRoutes}>
+              <Text style={styles.menuItem}>My routes</Text>
+            </TouchableOpacity>
+            <Text style={styles.menuItem}>Settings</Text>
+            <Text style={styles.menuItem}>About</Text>
+            <Text style={styles.menuItem}>Privacy Policy</Text>
+            <Text style={styles.menuItem}>Terms & Conditions</Text>
+          </View>
+        </Animated.View>
+
+        {menuOpen && (
+          <TouchableOpacity
+            style={styles.overlay}
+            activeOpacity={1}
+            onPress={toggleMenu}
+          />
+        )}
+
+        <StatusBar style="auto" />
+      </View>
+    );
+  }
+
+  // Create Route Page
+  if (currentPage === 'createroute') {
+    return (
+      <View style={styles.container}>
+        <MapView
+          style={styles.map}
+          initialRegion={{
+            latitude: location?.coords.latitude || 37.78825,
+            longitude: location?.coords.longitude || -122.4324,
+            latitudeDelta: 0.01,
+            longitudeDelta: 0.01,
+          }}
+          showsUserLocation={true}
+          onLongPress={handleMapLongPress}
+        >
+          {waypoints.map((waypoint, index) => (
+            <Marker
+              key={index}
+              coordinate={waypoint}
+              title={index === 0 ? 'Start' : `Waypoint ${index}`}
+              pinColor={index === 0 ? 'green' : 'red'}
+            />
+          ))}
+          {waypoints.length > 1 && (
+            <Polyline
+              coordinates={waypoints}
+              strokeColor="#2196F3"
+              strokeWidth={4}
+            />
+          )}
+        </MapView>
+
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => setCurrentPage('myroutes')} style={styles.backButton}>
+            <Text style={styles.backButtonText}>← Cancel</Text>
+          </TouchableOpacity>
+          <Text style={styles.appTitle}>Create Route</Text>
+          <View style={styles.burgerButton} />
+        </View>
+
+        <View style={styles.createRouteInfo}>
+          <Text style={styles.createRouteInfoText}>
+            Long press on map to add waypoints ({waypoints.length} added)
+          </Text>
+        </View>
+
+        <TouchableOpacity 
+          style={styles.saveRouteButton}
+          onPress={saveRoute}
+        >
+          <Text style={styles.saveRouteButtonText}>Save</Text>
+        </TouchableOpacity>
+
+        <StatusBar style="auto" />
+      </View>
+    );
+  }
+
+  // Your Pet Page
+  if (currentPage === 'yourpet') {
     return (
       <View style={styles.container}>
         {/* Header */}
@@ -217,7 +404,9 @@ if (currentPage === 'yourpet') {
             <TouchableOpacity onPress={navigateToYourPet}>
               <Text style={styles.menuItem}>Your pet</Text>
             </TouchableOpacity>
-            <Text style={styles.menuItem}>My routes</Text>
+            <TouchableOpacity onPress={navigateToMyRoutes}>
+              <Text style={styles.menuItem}>My routes</Text>
+            </TouchableOpacity>
             <Text style={styles.menuItem}>Settings</Text>
             <Text style={styles.menuItem}>About</Text>
             <Text style={styles.menuItem}>Privacy Policy</Text>
@@ -262,6 +451,14 @@ if (currentPage === 'yourpet') {
             description="Your current location"
           />
         )}
+        {/* Show selected route on map */}
+        {selectedRouteId && savedRoutes.find(r => r.id === selectedRouteId) && (
+          <Polyline
+            coordinates={savedRoutes.find(r => r.id === selectedRouteId).waypoints}
+            strokeColor="#4CAF50"
+            strokeWidth={4}
+          />
+        )}
       </MapView>
 
       {/* Header */}
@@ -294,7 +491,9 @@ if (currentPage === 'yourpet') {
           <TouchableOpacity onPress={navigateToYourPet}>
             <Text style={styles.menuItem}>Your pet</Text>
           </TouchableOpacity>
-          <Text style={styles.menuItem}>My routes</Text>
+          <TouchableOpacity onPress={navigateToMyRoutes}>
+            <Text style={styles.menuItem}>My routes</Text>
+          </TouchableOpacity>
           <Text style={styles.menuItem}>Settings</Text>
           <Text style={styles.menuItem}>About</Text>
           <Text style={styles.menuItem}>Privacy Policy</Text>
@@ -594,5 +793,77 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#333',
     flex: 1,
+  },
+  createRouteButton: {
+    backgroundColor: '#2196F3',
+    paddingVertical: 15,
+    paddingHorizontal: 30,
+    borderRadius: 25,
+    alignSelf: 'center',
+    marginVertical: 20,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+  },
+  createRouteButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  noRoutesText: {
+    fontSize: 16,
+    color: '#999',
+    textAlign: 'center',
+    marginTop: 20,
+  },
+  routeName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 4,
+  },
+  waypointCount: {
+    fontSize: 14,
+    color: '#666',
+  },
+  createRouteInfo: {
+    position: 'absolute',
+    top: 70,
+    left: 20,
+    right: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    padding: 12,
+    borderRadius: 8,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+  },
+  createRouteInfoText: {
+    fontSize: 14,
+    color: '#333',
+    textAlign: 'center',
+  },
+  saveRouteButton: {
+    position: 'absolute',
+    bottom: 30,
+    left: width / 2 - 60,
+    backgroundColor: '#4CAF50',
+    paddingVertical: 15,
+    paddingHorizontal: 40,
+    borderRadius: 30,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+  },
+  saveRouteButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
 });
