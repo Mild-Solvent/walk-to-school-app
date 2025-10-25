@@ -3,6 +3,7 @@ import { StyleSheet, View, Text, ActivityIndicator, TouchableOpacity, Image, Ani
 import { useState, useEffect, useRef } from 'react';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
+import { Video } from 'expo-av';
 
 const { width } = Dimensions.get('window');
 
@@ -13,7 +14,9 @@ export default function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState('map'); // 'map' or 'yourpet'
   const [achievementsModalVisible, setAchievementsModalVisible] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
   const slideAnim = useRef(new Animated.Value(width)).current;
+  const videoRef = useRef(null);
 
 useEffect(() => {
     (async () => {
@@ -51,6 +54,22 @@ useEffect(() => {
     setCurrentPage('map');
   };
 
+  const handleSimulateArrival = async () => {
+    setIsAnimating(true);
+    if (videoRef.current) {
+      await videoRef.current.playAsync();
+    }
+  };
+
+  const handleVideoPlaybackStatusUpdate = (status) => {
+    if (status.didJustFinish) {
+      setIsAnimating(false);
+      if (videoRef.current) {
+        videoRef.current.stopAsync();
+      }
+    }
+  };
+
   if (loading) {
     return (
       <View style={styles.container}>
@@ -85,13 +104,34 @@ if (currentPage === 'yourpet') {
         </View>
 
         <ScrollView style={styles.petPageContent}>
-          {/* Dragon Image */}
+          {/* Dragon Image/Video */}
           <View style={styles.dragonContainer}>
-            <Image
-              source={require('./assets/dragon.png')}
-              style={styles.largeDragonImage}
-              resizeMode="contain"
-            />
+            {!isAnimating ? (
+              <Image
+                source={require('./assets/dragon.png')}
+                style={styles.largeDragonImage}
+                resizeMode="contain"
+              />
+            ) : (
+              <Video
+                ref={videoRef}
+                source={require('./assets/animated-dragon.mp4')}
+                style={styles.largeDragonImage}
+                resizeMode="contain"
+                shouldPlay
+                isLooping={false}
+                onPlaybackStatusUpdate={handleVideoPlaybackStatusUpdate}
+              />
+            )}
+            <TouchableOpacity 
+              style={[styles.simulateButton, isAnimating && styles.simulateButtonDisabled]}
+              onPress={handleSimulateArrival}
+              disabled={isAnimating}
+            >
+              <Text style={styles.simulateButtonText}>
+                {isAnimating ? 'Animating...' : 'Simulate Arrival'}
+              </Text>
+            </TouchableOpacity>
           </View>
 
           {/* Achievements Button */}
@@ -430,6 +470,27 @@ const styles = StyleSheet.create({
   largeDragonImage: {
     width: 200,
     height: 200,
+  },
+  simulateButton: {
+    backgroundColor: '#2196F3',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    marginTop: 15,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+  },
+  simulateButtonDisabled: {
+    backgroundColor: '#ccc',
+    elevation: 0,
+  },
+  simulateButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '600',
   },
   achievementsButton: {
     backgroundColor: '#4CAF50',
