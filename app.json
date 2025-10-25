@@ -33,7 +33,7 @@
       ],
       "config": {
         "googleMaps": {
-          "apiKey": ""
+          "apiKey": "AIzaSyCZ8JNnr7G8kAtojqF43y8oCooYNxbltr8"
         }
       },
       "package": "com.mild_solvent.walktoschoolapp"
