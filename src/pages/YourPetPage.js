@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { View, Text, TouchableOpacity, Image, ScrollView, Modal, StyleSheet, Animated } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -6,6 +6,8 @@ import { VideoView, useVideoPlayer } from 'expo-video';
 import { commonStyles } from '../styles/commonStyles';
 import { colors, shadows, borderRadius, spacing } from '../styles/theme';
 import SideMenu from '../components/SideMenu';
+import ConfettiCannon from 'react-native-confetti-cannon';
+import Toast from 'react-native-toast-message';
 
 export default function YourPetPage({
   navigateToMap,
@@ -21,6 +23,8 @@ export default function YourPetPage({
   handleSimulateArrival,
   achievementsModalVisible,
   setAchievementsModalVisible,
+  unlockedAchievements = [],
+  arrivalCount = 0,
 }) {
   const videoSource = require('../../assets/animated-dragon.mp4');
   const player = useVideoPlayer(videoSource, player => {
@@ -28,6 +32,13 @@ export default function YourPetPage({
   });
 
   const modalSlide = useRef(new Animated.Value(500)).current;
+  const [fireConfettiKey, setFireConfettiKey] = useState(0);
+
+  const achievementDefinitions = [
+    { icon: '🏆', title: 'First Steps', subtitle: 'Completed your first route!' },
+    { icon: '⭐', title: 'Getting the Hang of It', subtitle: 'Two routes down!' },
+    { icon: '🎖️', title: 'On a Roll', subtitle: 'Three routes complete!' },
+  ];
 
   useEffect(() => {
     if (isAnimating) {
@@ -50,6 +61,23 @@ export default function YourPetPage({
       modalSlide.setValue(500);
     }
   }, [achievementsModalVisible]);
+
+  // Fire confetti and toast when a new achievement is unlocked (first 3 arrivals)
+  useEffect(() => {
+    if (arrivalCount > 0 && arrivalCount <= 3) {
+      // Only show when just unlocked
+      if (unlockedAchievements.includes(arrivalCount - 1)) {
+        setFireConfettiKey(prev => prev + 1);
+        Toast.show({
+          type: 'success',
+          text1: achievementDefinitions[arrivalCount - 1].title,
+          text2: achievementDefinitions[arrivalCount - 1].subtitle,
+          position: 'bottom',
+        });
+      }
+    }
+  }, [arrivalCount, unlockedAchievements]);
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={commonStyles.container}>
@@ -119,6 +147,18 @@ export default function YourPetPage({
         </View>
       </ScrollView>
 
+      {/* Confetti cannon - key changes to re-fire */}
+      {fireConfettiKey > 0 && (
+        <ConfettiCannon
+          key={`confetti-${fireConfettiKey}`}
+          count={120}
+          origin={{ x: 200, y: 0 }}
+          fadeOut={true}
+          fallSpeed={2500}
+          explosionSpeed={450}
+        />
+      )}
+
       <Modal
         animationType="fade"
         transparent={true}
@@ -134,18 +174,17 @@ export default function YourPetPage({
               </TouchableOpacity>
             </View>
             <View style={styles.achievementsList}>
-              <View style={styles.achievementItem}>
-                <Text style={styles.achievementIcon}>🏆</Text>
-                <Text style={styles.achievementText}>First Steps - Complete your first route</Text>
-              </View>
-              <View style={styles.achievementItem}>
-                <Text style={styles.achievementIcon}>⭐</Text>
-                <Text style={styles.achievementText}>Week Warrior - Walk 5 days in a row</Text>
-              </View>
-              <View style={styles.achievementItem}>
-                <Text style={styles.achievementIcon}>🎖️</Text>
-                <Text style={styles.achievementText}>Distance Master - Walk 10km total</Text>
-              </View>
+              {achievementDefinitions.map((a, idx) => {
+                const unlocked = unlockedAchievements.includes(idx);
+                return (
+                  <View key={idx} style={[styles.achievementItem, unlocked ? {} : { opacity: 0.45 }] }>
+                    <Text style={styles.achievementIcon}>{a.icon}</Text>
+                    <Text style={styles.achievementText}>
+                      {a.title} {unlocked ? '— Unlocked!' : '— Locked'}
+                    </Text>
+                  </View>
+                );
+              })}
             </View>
           </Animated.View>
         </View>
@@ -159,6 +198,8 @@ export default function YourPetPage({
         navigateToMyRoutes={navigateToMyRoutes}
         navigateToLearning={navigateToLearning}
       />
+
+      <Toast />
 
       <StatusBar style="auto" />
       </View>

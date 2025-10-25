@@ -27,6 +27,8 @@ export default function App() {
   const [showSchoolRoute, setShowSchoolRoute] = useState(false);
   const [totalPoints, setTotalPoints] = useState(0);
   const [recentRoutes, setRecentRoutes] = useState([]);
+  const [arrivalCount, setArrivalCount] = useState(0);
+  const [unlockedAchievements, setUnlockedAchievements] = useState([]);
   const slideAnim = useRef(new Animated.Value(width)).current;
 
   useEffect(() => {
@@ -136,6 +138,15 @@ export default function App() {
     setIsAnimating(true);
     addPoints(5);
     addRecentRoute();
+    
+    const newCount = arrivalCount + 1;
+    setArrivalCount(newCount);
+    
+    // Unlock achievement for first 3 arrivals
+    if (newCount <= 3 && !unlockedAchievements.includes(newCount - 1)) {
+      setUnlockedAchievements([...unlockedAchievements, newCount - 1]);
+    }
+    
     // Video will auto-stop after playing once
     setTimeout(() => {
       setIsAnimating(false);
@@ -228,6 +239,8 @@ export default function App() {
         handleSimulateArrival={handleSimulateArrival}
         achievementsModalVisible={achievementsModalVisible}
         setAchievementsModalVisible={setAchievementsModalVisible}
+        unlockedAchievements={unlockedAchievements}
+        arrivalCount={arrivalCount}
       />
     );
   }
