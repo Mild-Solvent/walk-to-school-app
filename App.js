@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, View, Text, ActivityIndicator, TouchableOpacity, Image, Animated, Dimensions } from 'react-native';
+import { StyleSheet, View, Text, ActivityIndicator, TouchableOpacity, Image, Animated, Dimensions, ScrollView, Modal } from 'react-native';
 import { useState, useEffect, useRef } from 'react';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
@@ -11,6 +11,8 @@ export default function App() {
   const [errorMsg, setErrorMsg] = useState(null);
   const [loading, setLoading] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState('map'); // 'map' or 'yourpet'
+  const [achievementsModalVisible, setAchievementsModalVisible] = useState(false);
   const slideAnim = useRef(new Animated.Value(width)).current;
 
 useEffect(() => {
@@ -40,6 +42,15 @@ useEffect(() => {
     setMenuOpen(!menuOpen);
   };
 
+  const navigateToYourPet = () => {
+    setCurrentPage('yourpet');
+    setMenuOpen(false);
+  };
+
+  const navigateToMap = () => {
+    setCurrentPage('map');
+  };
+
   if (loading) {
     return (
       <View style={styles.container}>
@@ -57,7 +68,138 @@ useEffect(() => {
     );
   }
 
-return (
+if (currentPage === 'yourpet') {
+    return (
+      <View style={styles.container}>
+        {/* Header */}
+        <View style={styles.header}>
+          <TouchableOpacity onPress={navigateToMap} style={styles.backButton}>
+            <Text style={styles.backButtonText}>← Back</Text>
+          </TouchableOpacity>
+          <Text style={styles.appTitle}>Your Pet</Text>
+          <TouchableOpacity onPress={toggleMenu} style={styles.burgerButton}>
+            <View style={styles.burgerLine} />
+            <View style={styles.burgerLine} />
+            <View style={styles.burgerLine} />
+          </TouchableOpacity>
+        </View>
+
+        <ScrollView style={styles.petPageContent}>
+          {/* Dragon Image */}
+          <View style={styles.dragonContainer}>
+            <Image
+              source={require('./assets/dragon.png')}
+              style={styles.largeDragonImage}
+              resizeMode="contain"
+            />
+          </View>
+
+          {/* Achievements Button */}
+          <TouchableOpacity 
+            style={styles.achievementsButton}
+            onPress={() => setAchievementsModalVisible(true)}
+          >
+            <Text style={styles.achievementsButtonText}>Achievements</Text>
+          </TouchableOpacity>
+
+          {/* Routes List */}
+          <View style={styles.routesContainer}>
+            <Text style={styles.routesTitle}>Recent Routes</Text>
+            <View style={styles.routeItem}>
+              <Text style={styles.routeDate}>Oct 21, 2025</Text>
+              <Text style={styles.routePoints}>+5pts</Text>
+            </View>
+            <View style={styles.routeItem}>
+              <Text style={styles.routeDate}>Oct 20, 2025</Text>
+              <Text style={styles.routePoints}>+5pts</Text>
+            </View>
+            <View style={styles.routeItem}>
+              <Text style={styles.routeDate}>Oct 19, 2025</Text>
+              <Text style={styles.routePoints}>+5pts</Text>
+            </View>
+            <View style={styles.routeItem}>
+              <Text style={styles.routeDate}>Oct 18, 2025</Text>
+              <Text style={styles.routePoints}>+5pts</Text>
+            </View>
+          </View>
+        </ScrollView>
+
+        {/* Achievements Modal */}
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={achievementsModalVisible}
+          onRequestClose={() => setAchievementsModalVisible(false)}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <View style={styles.modalHeader}>
+                <Text style={styles.modalTitle}>Achievements</Text>
+                <TouchableOpacity onPress={() => setAchievementsModalVisible(false)}>
+                  <Text style={styles.modalCloseButton}>✕</Text>
+                </TouchableOpacity>
+              </View>
+              <View style={styles.achievementsList}>
+                <View style={styles.achievementItem}>
+                  <Text style={styles.achievementIcon}>🏆</Text>
+                  <Text style={styles.achievementText}>First Steps - Complete your first route</Text>
+                </View>
+                <View style={styles.achievementItem}>
+                  <Text style={styles.achievementIcon}>⭐</Text>
+                  <Text style={styles.achievementText}>Week Warrior - Walk 5 days in a row</Text>
+                </View>
+                <View style={styles.achievementItem}>
+                  <Text style={styles.achievementIcon}>🎖️</Text>
+                  <Text style={styles.achievementText}>Distance Master - Walk 10km total</Text>
+                </View>
+              </View>
+            </View>
+          </View>
+        </Modal>
+
+        {/* Side Menu Panel */}
+        <Animated.View
+          style={[
+            styles.sideMenu,
+            {
+              transform: [{ translateX: slideAnim }],
+            },
+          ]}
+        >
+          <View style={styles.menuHeader}>
+            <Text style={styles.menuTitle}>Menu</Text>
+            <TouchableOpacity onPress={toggleMenu}>
+              <Text style={styles.closeButton}>✕</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.menuContent}>
+            <Text style={styles.menuItem}>Profile</Text>
+            <TouchableOpacity onPress={navigateToYourPet}>
+              <Text style={styles.menuItem}>Your pet</Text>
+            </TouchableOpacity>
+            <Text style={styles.menuItem}>My routes</Text>
+            <Text style={styles.menuItem}>Settings</Text>
+            <Text style={styles.menuItem}>About</Text>
+            <Text style={styles.menuItem}>Privacy Policy</Text>
+            <Text style={styles.menuItem}>Terms & Conditions</Text>
+          </View>
+        </Animated.View>
+
+        {/* Overlay */}
+        {menuOpen && (
+          <TouchableOpacity
+            style={styles.overlay}
+            activeOpacity={1}
+            onPress={toggleMenu}
+          />
+        )}
+
+        <StatusBar style="auto" />
+      </View>
+    );
+  }
+
+  return (
     <View style={styles.container}>
       <MapView
         style={styles.map}
@@ -109,7 +251,9 @@ return (
         </View>
         <View style={styles.menuContent}>
           <Text style={styles.menuItem}>Profile</Text>
-          <Text style={styles.menuItem}>Your pet</Text>
+          <TouchableOpacity onPress={navigateToYourPet}>
+            <Text style={styles.menuItem}>Your pet</Text>
+          </TouchableOpacity>
           <Text style={styles.menuItem}>My routes</Text>
           <Text style={styles.menuItem}>Settings</Text>
           <Text style={styles.menuItem}>About</Text>
@@ -127,7 +271,7 @@ return (
         />
       )}
 
-      <TouchableOpacity style={styles.dragonButton}>
+      <TouchableOpacity style={styles.dragonButton} onPress={navigateToYourPet}>
         <Image
           source={require('./assets/dragon.png')}
           style={styles.dragonImage}
@@ -263,5 +407,131 @@ const styles = StyleSheet.create({
     bottom: 0,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     zIndex: 15,
+  },
+  backButton: {
+    padding: 5,
+  },
+  backButtonText: {
+    fontSize: 16,
+    color: '#333',
+    fontWeight: '600',
+  },
+  petPageContent: {
+    flex: 1,
+    marginTop: 60,
+  },
+  dragonContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 40,
+    backgroundColor: '#f9f9f9',
+    marginTop: 20,
+  },
+  largeDragonImage: {
+    width: 200,
+    height: 200,
+  },
+  achievementsButton: {
+    backgroundColor: '#4CAF50',
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    borderRadius: 25,
+    alignSelf: 'center',
+    marginVertical: 20,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+  },
+  achievementsButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  routesContainer: {
+    padding: 20,
+  },
+  routesTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 15,
+    color: '#333',
+  },
+  routeItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 15,
+    paddingHorizontal: 15,
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    marginBottom: 10,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+  },
+  routeDate: {
+    fontSize: 16,
+    color: '#333',
+  },
+  routePoints: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#4CAF50',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    padding: 20,
+    width: width * 0.85,
+    maxHeight: '70%',
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e0e0e0',
+    paddingBottom: 15,
+  },
+  modalTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  modalCloseButton: {
+    fontSize: 24,
+    color: '#333',
+  },
+  achievementsList: {
+    paddingVertical: 10,
+  },
+  achievementItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 15,
+    paddingHorizontal: 10,
+    backgroundColor: '#f9f9f9',
+    borderRadius: 10,
+    marginBottom: 10,
+  },
+  achievementIcon: {
+    fontSize: 32,
+    marginRight: 15,
+  },
+  achievementText: {
+    fontSize: 16,
+    color: '#333',
+    flex: 1,
   },
 });
