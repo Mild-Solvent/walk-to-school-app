@@ -1,6 +1,7 @@
 import React from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { commonStyles } from '../styles/commonStyles';
 import SideMenu from '../components/SideMenu';
 
@@ -20,7 +21,8 @@ export default function MyRoutesPage({
   setSchoolRoute,
 }) {
   return (
-    <View style={commonStyles.container}>
+    <SafeAreaView style={styles.safeArea}>
+      <View style={commonStyles.container}>
       <View style={commonStyles.header}>
         <TouchableOpacity onPress={navigateToMap} style={commonStyles.backButton}>
           <Text style={commonStyles.backButtonText}>← Back</Text>
@@ -95,11 +97,16 @@ export default function MyRoutesPage({
       />
 
       <StatusBar style="auto" />
-    </View>
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
   petPageContent: {
     flex: 1,
     marginTop: 60,

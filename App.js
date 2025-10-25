@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { View, Text, ActivityIndicator, Animated, Dimensions } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Location from 'expo-location';
 import { commonStyles } from './src/styles/commonStyles';
 import MapPage from './src/pages/MapPage';
@@ -26,7 +27,6 @@ export default function App() {
   const [totalPoints, setTotalPoints] = useState(0);
   const [recentRoutes, setRecentRoutes] = useState([]);
   const slideAnim = useRef(new Animated.Value(width)).current;
-  const videoRef = useRef(null);
 
   useEffect(() => {
     (async () => {
@@ -135,34 +135,30 @@ export default function App() {
     setIsAnimating(true);
     addPoints(5);
     addRecentRoute();
-    if (videoRef.current) {
-      await videoRef.current.playAsync();
-    }
-  };
-
-  const handleVideoPlaybackStatusUpdate = (status) => {
-    if (status.didJustFinish) {
+    // Video will auto-stop after playing once
+    setTimeout(() => {
       setIsAnimating(false);
-      if (videoRef.current) {
-        videoRef.current.stopAsync();
-      }
-    }
+    }, 3000); // Adjust based on video length
   };
 
   if (loading) {
     return (
-      <View style={commonStyles.container}>
-        <ActivityIndicator size="large" color="#0000ff" />
-        <Text style={commonStyles.loadingText}>Getting your location...</Text>
-      </View>
+      <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
+        <View style={commonStyles.container}>
+          <ActivityIndicator size="large" color="#0000ff" />
+          <Text style={commonStyles.loadingText}>Getting your location...</Text>
+        </View>
+      </SafeAreaView>
     );
   }
 
   if (errorMsg) {
     return (
-      <View style={commonStyles.container}>
-        <Text style={commonStyles.errorText}>{errorMsg}</Text>
-      </View>
+      <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
+        <View style={commonStyles.container}>
+          <Text style={commonStyles.errorText}>{errorMsg}</Text>
+        </View>
+      </SafeAreaView>
     );
   }
 
@@ -229,8 +225,6 @@ export default function App() {
         recentRoutes={recentRoutes}
         isAnimating={isAnimating}
         handleSimulateArrival={handleSimulateArrival}
-        videoRef={videoRef}
-        handleVideoPlaybackStatusUpdate={handleVideoPlaybackStatusUpdate}
         achievementsModalVisible={achievementsModalVisible}
         setAchievementsModalVisible={setAchievementsModalVisible}
       />

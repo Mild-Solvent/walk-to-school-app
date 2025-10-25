@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { View, Text, TouchableOpacity, Image, ScrollView, Modal, StyleSheet } from 'react-native';
-import { Video } from 'expo-av';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { VideoView, useVideoPlayer } from 'expo-video';
 import { commonStyles } from '../styles/commonStyles';
 import SideMenu from '../components/SideMenu';
 
@@ -17,13 +18,25 @@ export default function YourPetPage({
   recentRoutes,
   isAnimating,
   handleSimulateArrival,
-  videoRef,
-  handleVideoPlaybackStatusUpdate,
   achievementsModalVisible,
   setAchievementsModalVisible,
 }) {
+  const videoSource = require('../../assets/animated-dragon.mp4');
+  const player = useVideoPlayer(videoSource, player => {
+    player.loop = false;
+  });
+
+  useEffect(() => {
+    if (isAnimating) {
+      player.play();
+    } else {
+      player.pause();
+      player.currentTime = 0;
+    }
+  }, [isAnimating]);
   return (
-    <View style={commonStyles.container}>
+    <SafeAreaView style={styles.safeArea}>
+      <View style={commonStyles.container}>
       <View style={commonStyles.header}>
         <TouchableOpacity onPress={navigateToMap} style={commonStyles.backButton}>
           <Text style={commonStyles.backButtonText}>← Back</Text>
@@ -43,23 +56,20 @@ export default function YourPetPage({
 
       <ScrollView style={styles.petPageContent}>
         <View style={styles.dragonContainer}>
-          {!isAnimating ? (
-            <Image
-              source={require('../../assets/dragon.png')}
-              style={styles.largeDragonImage}
-              resizeMode="contain"
-            />
-          ) : (
-            <Video
-              ref={videoRef}
-              source={require('../../assets/animated-dragon.mp4')}
-              style={styles.largeDragonImage}
-              resizeMode="contain"
-              shouldPlay
-              isLooping={false}
-              onPlaybackStatusUpdate={handleVideoPlaybackStatusUpdate}
-            />
-          )}
+            {!isAnimating ? (
+              <Image
+                source={require('../../assets/dragon.png')}
+                style={styles.largeDragonImage}
+                resizeMode="contain"
+              />
+            ) : (
+              <VideoView
+                player={player}
+                style={styles.largeDragonImage}
+                contentFit="contain"
+                nativeControls={false}
+              />
+            )}
           <TouchableOpacity
             style={[styles.simulateButton, isAnimating && styles.simulateButtonDisabled]}
             onPress={handleSimulateArrival}
@@ -135,11 +145,16 @@ export default function YourPetPage({
       />
 
       <StatusBar style="auto" />
-    </View>
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
   petPageContent: {
     flex: 1,
     marginTop: 60,

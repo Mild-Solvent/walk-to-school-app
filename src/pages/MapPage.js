@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { View, Text, TouchableOpacity, Image, Modal, StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import MapView, { Marker, Polyline } from 'react-native-maps';
 import { commonStyles } from '../styles/commonStyles';
 import SideMenu from '../components/SideMenu';
@@ -30,7 +31,8 @@ export default function MapPage({
     }
   };
   return (
-    <View style={commonStyles.container}>
+    <SafeAreaView style={styles.safeArea}>
+      <View style={commonStyles.container}>
       <MapView
         style={styles.map}
         initialRegion={{
@@ -133,11 +135,16 @@ export default function MapPage({
       </Modal>
 
       <StatusBar style="auto" />
-    </View>
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
   map: {
     width: '100%',
     height: '100%',
