@@ -108,9 +108,13 @@ return (
           </TouchableOpacity>
         </View>
         <View style={styles.menuContent}>
-          <Text style={styles.menuItem}>Settings</Text>
           <Text style={styles.menuItem}>Profile</Text>
+          <Text style={styles.menuItem}>Your pet</Text>
+          <Text style={styles.menuItem}>My routes</Text>
+          <Text style={styles.menuItem}>Settings</Text>
           <Text style={styles.menuItem}>About</Text>
+          <Text style={styles.menuItem}>Privacy Policy</Text>
+          <Text style={styles.menuItem}>Terms & Conditions</Text>
         </View>
       </Animated.View>
 
