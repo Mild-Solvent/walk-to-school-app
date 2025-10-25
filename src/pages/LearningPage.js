@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { View, Text, TouchableOpacity, ScrollView, Modal, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, Modal, StyleSheet, Animated } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { commonStyles } from '../styles/commonStyles';
+import { colors, shadows, borderRadius, spacing, animations } from '../styles/theme';
 import SideMenu from '../components/SideMenu';
 
 const quizzes = [
@@ -68,6 +69,18 @@ export default function LearningPage({
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [showResults, setShowResults] = useState(false);
   const [quizCompleted, setQuizCompleted] = useState({});
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (selectedQuiz) {
+      fadeAnim.setValue(0);
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: animations.timing.normal,
+        useNativeDriver: true,
+      }).start();
+    }
+  }, [currentSlide]);
 
   const startQuiz = (quiz) => {
     setSelectedQuiz(quiz);
@@ -190,7 +203,7 @@ export default function LearningPage({
               Question {currentSlide + 1} of {selectedQuiz.slides.length}
             </Text>
 
-            <View style={styles.slideContent}>
+            <Animated.View style={[styles.slideContent, { opacity: fadeAnim }]}>
               <Text style={styles.question}>
                 {selectedQuiz.slides[currentSlide].question}
               </Text>
@@ -226,7 +239,7 @@ export default function LearningPage({
                   </TouchableOpacity>
                 );
               })}
-            </View>
+            </Animated.View>
 
             <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
               <Text style={styles.nextButtonText}>
@@ -255,7 +268,7 @@ export default function LearningPage({
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: colors.background,
   },
   pageContent: {
     flex: 1,
@@ -268,21 +281,17 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
-    color: '#333',
+    color: colors.text,
   },
   quizCard: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: colors.surface,
     padding: 20,
-    borderRadius: 12,
+    borderRadius: borderRadius.md,
     marginBottom: 15,
-    elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    ...shadows.medium,
   },
   quizInfo: {
     flex: 1,
@@ -290,29 +299,30 @@ const styles = StyleSheet.create({
   quizTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#333',
+    color: colors.text,
     marginBottom: 5,
   },
   quizDetails: {
     fontSize: 14,
-    color: '#666',
+    color: colors.textSecondary,
   },
   completedBadge: {
     width: 30,
     height: 30,
     borderRadius: 15,
-    backgroundColor: '#4CAF50',
+    backgroundColor: colors.accent,
     justifyContent: 'center',
     alignItems: 'center',
+    ...shadows.glow,
   },
   completedText: {
-    color: '#fff',
+    color: colors.text,
     fontSize: 16,
     fontWeight: 'bold',
   },
   quizModal: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: colors.background,
     paddingTop: 50,
   },
   quizHeader: {
@@ -325,27 +335,27 @@ const styles = StyleSheet.create({
   quizModalTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#333',
+    color: colors.text,
     flex: 1,
   },
   closeButton: {
     fontSize: 28,
-    color: '#333',
+    color: colors.text,
   },
   progressBar: {
     height: 4,
-    backgroundColor: '#e0e0e0',
+    backgroundColor: colors.surface,
     marginHorizontal: 20,
     borderRadius: 2,
     overflow: 'hidden',
   },
   progressFill: {
     height: '100%',
-    backgroundColor: '#4CAF50',
+    backgroundColor: colors.accent,
   },
   slideCounter: {
     fontSize: 14,
-    color: '#666',
+    color: colors.textSecondary,
     textAlign: 'center',
     marginTop: 15,
     marginBottom: 30,
@@ -357,56 +367,58 @@ const styles = StyleSheet.create({
   question: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#333',
+    color: colors.text,
     marginBottom: 30,
     lineHeight: 30,
   },
   optionButton: {
-    backgroundColor: '#f5f5f5',
+    backgroundColor: colors.surface,
     padding: 18,
-    borderRadius: 12,
+    borderRadius: borderRadius.md,
     marginBottom: 12,
     borderWidth: 2,
     borderColor: 'transparent',
+    ...shadows.small,
   },
   optionButtonSelected: {
-    backgroundColor: '#E3F2FD',
-    borderColor: '#2196F3',
+    backgroundColor: colors.surfaceLight,
+    borderColor: colors.accent,
   },
   optionButtonCorrect: {
-    backgroundColor: '#E8F5E9',
-    borderColor: '#4CAF50',
+    backgroundColor: colors.surfaceLight,
+    borderColor: colors.success,
   },
   optionButtonIncorrect: {
-    backgroundColor: '#FFEBEE',
-    borderColor: '#F44336',
+    backgroundColor: colors.surfaceLight,
+    borderColor: colors.error,
   },
   optionText: {
     fontSize: 16,
-    color: '#333',
+    color: colors.text,
   },
   optionTextSelected: {
-    color: '#2196F3',
+    color: colors.accent,
     fontWeight: 'bold',
   },
   optionTextCorrect: {
-    color: '#4CAF50',
+    color: colors.success,
     fontWeight: 'bold',
   },
   optionTextIncorrect: {
-    color: '#F44336',
+    color: colors.error,
     fontWeight: 'bold',
   },
   nextButton: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: colors.primaryLight,
     marginHorizontal: 20,
     marginBottom: 30,
     paddingVertical: 16,
-    borderRadius: 12,
+    borderRadius: borderRadius.md,
     alignItems: 'center',
+    ...shadows.glow,
   },
   nextButtonText: {
-    color: '#fff',
+    color: colors.text,
     fontSize: 18,
     fontWeight: 'bold',
   },
@@ -416,14 +428,15 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   pointsBadge: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: colors.accent,
     paddingHorizontal: 12,
     paddingVertical: 6,
-    borderRadius: 20,
+    borderRadius: borderRadius.lg,
     marginRight: 5,
+    ...shadows.small,
   },
   pointsText: {
-    color: '#fff',
+    color: colors.text,
     fontSize: 14,
     fontWeight: 'bold',
   },

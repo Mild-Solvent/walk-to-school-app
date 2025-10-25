@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, Animated, StyleSheet } from 'react-native';
 import { width } from '../styles/commonStyles';
+import { colors, shadows, borderRadius, spacing } from '../styles/theme';
 
 export default function SideMenu({ 
   slideAnim, 
@@ -62,12 +63,8 @@ const styles = StyleSheet.create({
     right: 0,
     width: width * 0.75,
     height: '100%',
-    backgroundColor: '#fff',
-    elevation: 5,
-    shadowColor: '#000',
-    shadowOffset: { width: -2, height: 0 },
-    shadowOpacity: 0.25,
-    shadowRadius: 5,
+    backgroundColor: colors.surface,
+    ...shadows.large,
     zIndex: 20,
   },
   menuHeader: {
@@ -76,27 +73,27 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 20,
     borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
+    borderBottomColor: colors.primaryLight,
     marginTop: 40,
   },
   menuTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#333',
+    color: colors.text,
   },
   closeButton: {
     fontSize: 24,
-    color: '#333',
+    color: colors.text,
   },
   menuContent: {
     padding: 20,
   },
   menuItem: {
     fontSize: 18,
-    color: '#333',
+    color: colors.text,
     paddingVertical: 15,
     borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
+    borderBottomColor: colors.primary,
   },
   overlay: {
     position: 'absolute',
@@ -104,7 +101,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: colors.overlay,
     zIndex: 15,
   },
 });

@@ -3,6 +3,7 @@ import { View, Text, ActivityIndicator, Animated, Dimensions } from 'react-nativ
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Location from 'expo-location';
 import { commonStyles } from './src/styles/commonStyles';
+import { colors } from './src/styles/theme';
 import MapPage from './src/pages/MapPage';
 import YourPetPage from './src/pages/YourPetPage';
 import MyRoutesPage from './src/pages/MyRoutesPage';
@@ -143,9 +144,9 @@ export default function App() {
 
   if (loading) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
         <View style={commonStyles.container}>
-          <ActivityIndicator size="large" color="#0000ff" />
+          <ActivityIndicator size="large" color={colors.accent} />
           <Text style={commonStyles.loadingText}>Getting your location...</Text>
         </View>
       </SafeAreaView>
@@ -154,7 +155,7 @@ export default function App() {
 
   if (errorMsg) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
         <View style={commonStyles.container}>
           <Text style={commonStyles.errorText}>{errorMsg}</Text>
         </View>

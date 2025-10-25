@@ -4,6 +4,7 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import MapView, { Marker, Polyline } from 'react-native-maps';
 import { commonStyles, width } from '../styles/commonStyles';
+import { colors, shadows, borderRadius, spacing } from '../styles/theme';
 
 export default function CreateRoutePage({
   location,
@@ -73,7 +74,7 @@ export default function CreateRoutePage({
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: colors.background,
   },
   map: {
     width: '100%',
@@ -84,36 +85,28 @@ const styles = StyleSheet.create({
     top: 70,
     left: 20,
     right: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    backgroundColor: colors.overlayLight,
     padding: 12,
-    borderRadius: 8,
-    elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
+    borderRadius: borderRadius.md,
+    ...shadows.medium,
   },
   createRouteInfoText: {
     fontSize: 14,
-    color: '#333',
+    color: colors.text,
     textAlign: 'center',
   },
   saveRouteButton: {
     position: 'absolute',
     bottom: 30,
     left: width / 2 - 60,
-    backgroundColor: '#4CAF50',
+    backgroundColor: colors.primaryLight,
     paddingVertical: 15,
     paddingHorizontal: 40,
-    borderRadius: 30,
-    elevation: 5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    borderRadius: borderRadius.xl,
+    ...shadows.glow,
   },
   saveRouteButtonText: {
-    color: '#fff',
+    color: colors.text,
     fontSize: 18,
     fontWeight: 'bold',
   },

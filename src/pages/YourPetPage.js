@@ -1,9 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { View, Text, TouchableOpacity, Image, ScrollView, Modal, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, Image, ScrollView, Modal, StyleSheet, Animated } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { VideoView, useVideoPlayer } from 'expo-video';
 import { commonStyles } from '../styles/commonStyles';
+import { colors, shadows, borderRadius, spacing } from '../styles/theme';
 import SideMenu from '../components/SideMenu';
 
 export default function YourPetPage({
@@ -26,6 +27,8 @@ export default function YourPetPage({
     player.loop = false;
   });
 
+  const modalSlide = useRef(new Animated.Value(500)).current;
+
   useEffect(() => {
     if (isAnimating) {
       player.play();
@@ -34,6 +37,19 @@ export default function YourPetPage({
       player.currentTime = 0;
     }
   }, [isAnimating]);
+
+  useEffect(() => {
+    if (achievementsModalVisible) {
+      Animated.spring(modalSlide, {
+        toValue: 0,
+        tension: 40,
+        friction: 8,
+        useNativeDriver: true,
+      }).start();
+    } else {
+      modalSlide.setValue(500);
+    }
+  }, [achievementsModalVisible]);
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={commonStyles.container}>
@@ -104,13 +120,13 @@ export default function YourPetPage({
       </ScrollView>
 
       <Modal
-        animationType="slide"
+        animationType="fade"
         transparent={true}
         visible={achievementsModalVisible}
         onRequestClose={() => setAchievementsModalVisible(false)}
       >
         <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
+          <Animated.View style={[styles.modalContent, { transform: [{ translateY: modalSlide }] }]}>
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>Achievements</Text>
               <TouchableOpacity onPress={() => setAchievementsModalVisible(false)}>
@@ -131,7 +147,7 @@ export default function YourPetPage({
                 <Text style={styles.achievementText}>Distance Master - Walk 10km total</Text>
               </View>
             </View>
-          </View>
+          </Animated.View>
         </View>
       </Modal>
 
@@ -153,7 +169,7 @@ export default function YourPetPage({
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: colors.background,
   },
   petPageContent: {
     flex: 1,
@@ -163,49 +179,44 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 40,
-    backgroundColor: '#f9f9f9',
+    backgroundColor: colors.surfaceLight,
     marginTop: 20,
+    marginHorizontal: 20,
+    borderRadius: borderRadius.lg,
+    ...shadows.medium,
   },
   largeDragonImage: {
     width: 200,
     height: 200,
   },
   simulateButton: {
-    backgroundColor: '#2196F3',
+    backgroundColor: colors.accent,
     paddingVertical: 10,
     paddingHorizontal: 20,
-    borderRadius: 20,
+    borderRadius: borderRadius.lg,
     marginTop: 15,
-    elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
+    ...shadows.small,
   },
   simulateButtonDisabled: {
-    backgroundColor: '#ccc',
+    backgroundColor: colors.surface,
     elevation: 0,
   },
   simulateButtonText: {
-    color: '#fff',
+    color: colors.text,
     fontSize: 14,
     fontWeight: '600',
   },
   achievementsButton: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: colors.primaryLight,
     paddingVertical: 12,
     paddingHorizontal: 30,
-    borderRadius: 25,
+    borderRadius: borderRadius.xl,
     alignSelf: 'center',
     marginVertical: 20,
-    elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
+    ...shadows.glow,
   },
   achievementsButtonText: {
-    color: '#fff',
+    color: colors.text,
     fontSize: 16,
     fontWeight: 'bold',
   },
@@ -216,7 +227,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 15,
-    color: '#333',
+    color: colors.text,
   },
   routeItem: {
     flexDirection: 'row',
@@ -224,42 +235,39 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 15,
     paddingHorizontal: 15,
-    backgroundColor: '#fff',
-    borderRadius: 8,
+    backgroundColor: colors.surface,
+    borderRadius: borderRadius.md,
     marginBottom: 10,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
+    ...shadows.small,
   },
   routeDate: {
     fontSize: 16,
-    color: '#333',
+    color: colors.text,
   },
   routePoints: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#4CAF50',
+    color: colors.accent,
   },
   noRoutesText: {
     fontSize: 14,
-    color: '#999',
+    color: colors.textMuted,
     textAlign: 'center',
     marginTop: 10,
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: colors.overlay,
     justifyContent: 'center',
     alignItems: 'center',
   },
   modalContent: {
-    backgroundColor: '#fff',
-    borderRadius: 20,
+    backgroundColor: colors.surface,
+    borderRadius: borderRadius.lg,
     padding: 20,
     width: '85%',
     maxHeight: '70%',
+    ...shadows.large,
   },
   modalHeader: {
     flexDirection: 'row',
@@ -267,17 +275,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 20,
     borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
+    borderBottomColor: colors.primaryLight,
     paddingBottom: 15,
   },
   modalTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#333',
+    color: colors.text,
   },
   modalCloseButton: {
     fontSize: 24,
-    color: '#333',
+    color: colors.text,
   },
   achievementsList: {
     paddingVertical: 10,
@@ -287,9 +295,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 15,
     paddingHorizontal: 10,
-    backgroundColor: '#f9f9f9',
-    borderRadius: 10,
+    backgroundColor: colors.surfaceLight,
+    borderRadius: borderRadius.md,
     marginBottom: 10,
+    ...shadows.small,
   },
   achievementIcon: {
     fontSize: 32,
@@ -297,7 +306,7 @@ const styles = StyleSheet.create({
   },
   achievementText: {
     fontSize: 16,
-    color: '#333',
+    color: colors.text,
     flex: 1,
   },
   headerRight: {
@@ -306,14 +315,15 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   pointsBadge: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: colors.accent,
     paddingHorizontal: 12,
     paddingVertical: 6,
-    borderRadius: 20,
+    borderRadius: borderRadius.lg,
     marginRight: 5,
+    ...shadows.small,
   },
   pointsText: {
-    color: '#fff',
+    color: colors.text,
     fontSize: 14,
     fontWeight: 'bold',
   },

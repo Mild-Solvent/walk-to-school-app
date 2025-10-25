@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { View, Text, TouchableOpacity, Image, Modal, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, Image, Modal, StyleSheet, Animated } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import MapView, { Marker, Polyline } from 'react-native-maps';
 import { commonStyles } from '../styles/commonStyles';
+import { colors, shadows, borderRadius, spacing, animations } from '../styles/theme';
 import SideMenu from '../components/SideMenu';
 
 export default function MapPage({ 
@@ -22,8 +23,39 @@ export default function MapPage({
   totalPoints 
 }) {
   const [noRouteModalVisible, setNoRouteModalVisible] = useState(false);
+  const modalScale = useRef(new Animated.Value(0)).current;
+  const buttonScale = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    if (noRouteModalVisible) {
+      Animated.spring(modalScale, {
+        toValue: 1,
+        tension: 50,
+        friction: 7,
+        useNativeDriver: true,
+      }).start();
+    } else {
+      modalScale.setValue(0);
+    }
+  }, [noRouteModalVisible]);
+
+  const animateButton = () => {
+    Animated.sequence([
+      Animated.timing(buttonScale, {
+        toValue: 0.95,
+        duration: animations.timing.fast,
+        useNativeDriver: true,
+      }),
+      Animated.timing(buttonScale, {
+        toValue: 1,
+        duration: animations.timing.fast,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  };
 
   const handleGoToSchoolClick = () => {
+    animateButton();
     if (schoolRouteId) {
       handleGoToSchool();
     } else {
@@ -93,13 +125,15 @@ export default function MapPage({
         navigateToLearning={navigateToLearning}
       />
 
-      <TouchableOpacity style={styles.dragonButton} onPress={navigateToYourPet}>
+      <Animated.View style={{ transform: [{ scale: buttonScale }] }}>
+        <TouchableOpacity style={styles.dragonButton} onPress={() => { animateButton(); navigateToYourPet(); }}>
         <Image
           source={require('../../assets/dragon.png')}
           style={styles.dragonImage}
           resizeMode="contain"
         />
       </TouchableOpacity>
+      </Animated.View>
 
       <TouchableOpacity style={styles.goToSchoolButton} onPress={handleGoToSchoolClick}>
         <Text style={styles.goToSchoolButtonText}>Go to school</Text>
@@ -112,7 +146,7 @@ export default function MapPage({
         onRequestClose={() => setNoRouteModalVisible(false)}
       >
         <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
+          <Animated.View style={[styles.modalContent, { transform: [{ scale: modalScale }] }]}>
             <Text style={styles.modalTitle}>No Route Set</Text>
             <Text style={styles.modalMessage}>Please select or create a route</Text>
             <TouchableOpacity
@@ -130,7 +164,7 @@ export default function MapPage({
             >
               <Text style={styles.modalButtonSecondaryText}>Cancel</Text>
             </TouchableOpacity>
-          </View>
+          </Animated.View>
         </View>
       </Modal>
 
@@ -143,7 +177,7 @@ export default function MapPage({
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: colors.background,
   },
   map: {
     width: '100%',
@@ -156,14 +190,10 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: '#fff',
+    backgroundColor: colors.primaryLight,
     justifyContent: 'center',
     alignItems: 'center',
-    elevation: 5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    ...shadows.glow,
   },
   dragonImage: {
     width: 40,
@@ -175,14 +205,15 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   pointsBadge: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: colors.accent,
     paddingHorizontal: 12,
     paddingVertical: 6,
-    borderRadius: 20,
+    borderRadius: borderRadius.lg,
     marginRight: 5,
+    ...shadows.small,
   },
   pointsText: {
-    color: '#fff',
+    color: colors.text,
     fontSize: 14,
     fontWeight: 'bold',
   },
@@ -191,63 +222,56 @@ const styles = StyleSheet.create({
     bottom: 30,
     left: '50%',
     transform: [{ translateX: -75 }],
-    backgroundColor: '#2196F3',
+    backgroundColor: colors.primaryLight,
     paddingVertical: 16,
     paddingHorizontal: 32,
-    borderRadius: 30,
-    elevation: 5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    borderRadius: borderRadius.xl,
+    ...shadows.glow,
     minWidth: 150,
   },
   goToSchoolButtonText: {
-    color: '#fff',
+    color: colors.text,
     fontSize: 18,
     fontWeight: 'bold',
     textAlign: 'center',
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: colors.overlay,
     justifyContent: 'center',
     alignItems: 'center',
   },
   modalContent: {
-    backgroundColor: '#fff',
-    borderRadius: 20,
+    backgroundColor: colors.surface,
+    borderRadius: borderRadius.lg,
     padding: 30,
     width: '80%',
     alignItems: 'center',
-    elevation: 5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
+    ...shadows.large,
   },
   modalTitle: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#333',
+    color: colors.text,
     marginBottom: 10,
   },
   modalMessage: {
     fontSize: 16,
-    color: '#666',
+    color: colors.textSecondary,
     textAlign: 'center',
     marginBottom: 25,
   },
   modalButton: {
-    backgroundColor: '#2196F3',
+    backgroundColor: colors.primaryLight,
     paddingVertical: 14,
     paddingHorizontal: 30,
-    borderRadius: 25,
+    borderRadius: borderRadius.xl,
     width: '100%',
     marginBottom: 10,
+    ...shadows.small,
   },
   modalButtonText: {
-    color: '#fff',
+    color: colors.text,
     fontSize: 16,
     fontWeight: 'bold',
     textAlign: 'center',
@@ -256,7 +280,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
   },
   modalButtonSecondaryText: {
-    color: '#666',
+    color: colors.textMuted,
     fontSize: 16,
   },
 });

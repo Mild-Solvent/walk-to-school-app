@@ -3,6 +3,7 @@ import { StatusBar } from 'expo-status-bar';
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { commonStyles } from '../styles/commonStyles';
+import { colors, shadows, borderRadius, spacing } from '../styles/theme';
 import SideMenu from '../components/SideMenu';
 
 export default function MyRoutesPage({
@@ -105,7 +106,7 @@ export default function MyRoutesPage({
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: colors.background,
   },
   petPageContent: {
     flex: 1,
@@ -113,20 +114,16 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   createRouteButton: {
-    backgroundColor: '#2196F3',
+    backgroundColor: colors.primaryLight,
     paddingVertical: 15,
     paddingHorizontal: 30,
-    borderRadius: 25,
+    borderRadius: borderRadius.xl,
     alignSelf: 'center',
     marginVertical: 20,
-    elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
+    ...shadows.glow,
   },
   createRouteButtonText: {
-    color: '#fff',
+    color: colors.text,
     fontSize: 18,
     fontWeight: 'bold',
   },
@@ -138,11 +135,11 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 15,
-    color: '#333',
+    color: colors.text,
   },
   noRoutesText: {
     fontSize: 16,
-    color: '#999',
+    color: colors.textMuted,
     textAlign: 'center',
     marginTop: 20,
   },
@@ -156,18 +153,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 15,
     paddingHorizontal: 15,
-    backgroundColor: '#fff',
-    borderRadius: 8,
+    backgroundColor: colors.surface,
+    borderRadius: borderRadius.md,
     borderBottomLeftRadius: 0,
     borderBottomRightRadius: 0,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
+    ...shadows.small,
   },
   routeItemSchool: {
-    borderColor: '#4CAF50',
+    borderColor: colors.accent,
     borderWidth: 2,
     borderBottomWidth: 0,
   },
@@ -177,39 +170,40 @@ const styles = StyleSheet.create({
   routeName: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#333',
+    color: colors.text,
     marginBottom: 4,
   },
   routeDate: {
     fontSize: 16,
-    color: '#333',
+    color: colors.textSecondary,
   },
   waypointCount: {
     fontSize: 14,
-    color: '#666',
+    color: colors.textMuted,
   },
   setSchoolButton: {
-    backgroundColor: '#f5f5f5',
+    backgroundColor: colors.surfaceLight,
     paddingVertical: 10,
     paddingHorizontal: 15,
-    borderBottomLeftRadius: 8,
-    borderBottomRightRadius: 8,
+    borderBottomLeftRadius: borderRadius.md,
+    borderBottomRightRadius: borderRadius.md,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#e0e0e0',
+    borderColor: colors.primary,
     borderTopWidth: 0,
   },
   setSchoolButtonActive: {
-    backgroundColor: '#4CAF50',
-    borderColor: '#4CAF50',
+    backgroundColor: colors.accent,
+    borderColor: colors.accent,
+    ...shadows.small,
   },
   setSchoolButtonText: {
     fontSize: 14,
-    color: '#666',
+    color: colors.textSecondary,
     fontWeight: '600',
   },
   setSchoolButtonTextActive: {
-    color: '#fff',
+    color: colors.text,
   },
   headerRight: {
     flexDirection: 'row',
@@ -217,14 +211,15 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   pointsBadge: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: colors.accent,
     paddingHorizontal: 12,
     paddingVertical: 6,
-    borderRadius: 20,
+    borderRadius: borderRadius.lg,
     marginRight: 5,
+    ...shadows.small,
   },
   pointsText: {
-    color: '#fff',
+    color: colors.text,
     fontSize: 14,
     fontWeight: 'bold',
   },
